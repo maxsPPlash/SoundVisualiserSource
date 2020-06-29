@@ -8,31 +8,20 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "ConstantBufferTypes.h"
-#include <chrono>
-
-#include <Xaudio2.h>
-#include <Xaudio2fx.h>
-
-#define PNG_STDIO_SUPPORTED
-#include <png.h>
-
-struct IMFSinkWriter;
+#include "../IRecorder.h"
 
 class Graphics
 {
 public:
-	bool Initialize(HWND hwnd, int width, int height);
+	bool Initialize(HWND hwnd, int width, int height, IRecorder *frame_recorder);
 	void RenderFrame();
+
+	CB_VS_vertexshader &data() { return shader_data; }
+	void tdata(unsigned char *val) { texture_data = val; }
 private:
 	bool InitializeDirectX(HWND hwnd, int width, int height);
 	bool InitializeShaders();
 	bool InitializeScene();
-	bool InitializeAudio();
-	int load_sound();
-
-	void write_png_file(const char *filename, png_bytep *data);
-
-//	HRESULT WriteFrame(IMFSinkWriter* pWriter, DWORD streamIndex, const LONGLONG& rtStart, const UINT32 uiWidth, const UINT32 uiHeight);
 
 	Microsoft::WRL::ComPtr<ID3D11Device> device;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> deviceContext;
@@ -62,22 +51,11 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> myTexture1;
 
-	IXAudio2				*_xaudio = 0;
-	IXAudio2MasteringVoice	*_mastering_voice = 0;
-	IXAudio2SourceVoice		*_source_voice = 0;
-	WAVEFORMATEX			wfx;
+	CB_VS_vertexshader shader_data;
+	unsigned char *texture_data;
 
-	IMFSinkWriter *pSinkWriter;
-	DWORD stream;
-	LONGLONG rtStart;
+	float width;
+	float height;
 
-	int wnd_w;
-	int wnd_h;
-	std::chrono::time_point<std::chrono::steady_clock> start_time;
-	std::chrono::time_point<std::chrono::steady_clock> prev_time;
-	float tent_len;
-	float cam_pos;
-	float time;
-
-	int cur_img;
+	IRecorder *recorder;
 };
