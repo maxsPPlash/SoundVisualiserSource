@@ -1,8 +1,10 @@
 #include "SoundAnalyser.h"
 
+#define _USE_MATH_DEFINES
 #include <fftw3.h>
 #include <math.h>
 #include <Windows.h>
+#include "Utils.h"
 
 /* https://www.youtube.com/watch?v=GDKFSAXZwtc
 Natural
@@ -22,7 +24,7 @@ void SoundAnalyser::Update() {
 	fftwf_complex *in, *out;
 	fftwf_plan p;
 
-	const int num_items = 2048;
+	const int num_items = 1024;
 	const int bass_samples_cnt = 32;
 
 	float *buf = snd->Data();
@@ -35,8 +37,10 @@ void SoundAnalyser::Update() {
 	in = (fftwf_complex *)fftwf_malloc(sizeof(fftwf_complex) * num_items);
 	out = (fftwf_complex *)fftwf_malloc(sizeof(fftwf_complex) * num_items);
 	for (int i = 0; i < num_items; i++) {
+		// Hann function
+		double multiplier = 0.5 * (1 - cos(2*M_PI*i/2047));
 		int id = i * 2;
-		in[i][0] = buf[id];
+		in[i][0] = multiplier*buf[id];
 		in[i][1] = 0;
 	}
 
@@ -44,10 +48,12 @@ void SoundAnalyser::Update() {
 	fftwf_execute(p);
 
 	for (int i = 0; i < 512; ++i) {
-		float r1 = sqrt (sqrt( pow(out[i][0],2) + pow(out[i][1],2)));
+		float r1 = (sqrt( pow(out[i][0],2) + pow(out[i][1],2)));
+//		float dbValue = log10(r1);
+//            magnitude = Math.round(dbValue * 8);
 //		float r2 = sqrt (sqrt( pow(out[i*2+1][0],2) + pow(out[i*2+1][1], 2)));
-		float val = min(sqrt(r1) / 3.f, 1.f);
-		fft_data[i] = 255 * val;        //2 sqrt since np.sqrt( np.abs() )
+		float val = r1 / 20.f;// min(sqrt(r1) / 3.f, 1.f);
+		fft_data[i] = 255 * clamp(val, 0.f, 1.f);        //2 sqrt since np.sqrt( np.abs() )
 		if (i < bass_samples_cnt)
 			data.fft_bass += val;
 	}
