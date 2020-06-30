@@ -1,49 +1,7 @@
-﻿E:\Projects\SoundVisualiserSource\trunk\src\pixelshader.hlsl(93,19-37): warning X3203: signed/unsigned mismatch, unsigned assumed
-  compilation object save succeeded; see E:\Projects\SoundVisualiserSource\trunk\src\x64\Debug\pixelshader.cso
-E:\Projects\SoundVisualiserSource\trunk\src\pixelshader.hlsl(122,4-49): warning X3206: implicit truncation of vector type
-E:\Projects\SoundVisualiserSource\trunk\src\pixelshader.hlsl(124,10-93): warning X3206: 'lerp': implicit truncation of vector type
+﻿D:\Tests\SoundVisualiserSource\trunk\src\pixelshader.hlsl(79,18-35): warning X3203: signed/unsigned mismatch, unsigned assumed
+D:\Tests\SoundVisualiserSource\trunk\src\pixelshader.hlsl(111,19-37): warning X3203: signed/unsigned mismatch, unsigned assumed
+D:\Tests\SoundVisualiserSource\trunk\src\pixelshader.hlsl(140,4-49): warning X3206: implicit truncation of vector type
+D:\Tests\SoundVisualiserSource\trunk\src\pixelshader.hlsl(142,10-93): warning X3206: 'lerp': implicit truncation of vector type
   
-  compilation object save succeeded; see E:\Projects\SoundVisualiserSource\trunk\src\x64\Debug\vertexshader.cso
-  Engine.cpp
-  AdapterReader.cpp
-  Graphics.cpp
-e:\projects\soundvisualisersource\trunk\src\graphics\graphics.cpp(181): warning C4101: 'y': unreferenced local variable
-e:\projects\soundvisualisersource\trunk\src\graphics\graphics.cpp(261): warning C4244: '=': conversion from 'float' to 'unsigned char', possible loss of data
-e:\projects\soundvisualisersource\trunk\src\graphics\graphics.cpp(311): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-e:\projects\soundvisualisersource\trunk\src\graphics\graphics.cpp(321): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-e:\projects\soundvisualisersource\trunk\src\graphics\graphics.cpp(519): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
-e:\projects\soundvisualisersource\trunk\src\graphics\graphics.cpp(520): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
-e:\projects\soundvisualisersource\trunk\src\graphics\graphics.cpp(633): warning C4244: '=': conversion from 'sf_count_t' to 'int', possible loss of data
-e:\projects\soundvisualisersource\trunk\src\graphics\graphics.cpp(644): warning C4244: '=': conversion from 'sf_count_t' to 'int', possible loss of data
-e:\projects\soundvisualisersource\trunk\src\graphics\graphics.cpp(616): warning C4101: 'infilename': unreferenced local variable
-e:\projects\soundvisualisersource\trunk\src\graphics\graphics.cpp(624): warning C4101: 'j': unreferenced local variable
-e:\projects\soundvisualisersource\trunk\src\graphics\graphics.cpp(624): warning C4101: 'i': unreferenced local variable
-e:\projects\soundvisualisersource\trunk\src\graphics\graphics.cpp(620): warning C4101: 'num_channels': unreferenced local variable
-e:\programs\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\memory(2538): warning C4267: 'initializing': conversion from 'size_t' to '_Ty', possible loss of data
-          with
-          [
-              _Ty=UINT
-          ]
-  e:\projects\soundvisualisersource\trunk\src\graphics\vertexbuffer.h(48): note: see reference to function template instantiation 'std::unique_ptr<UINT,std::default_delete<_Ty>> std::make_unique<UINT,size_t,0>(size_t &&)' being compiled
-          with
-          [
-              _Ty=UINT
-          ]
-  e:\projects\soundvisualisersource\trunk\src\graphics\vertexbuffer.h(46): note: while compiling class template member function 'HRESULT VertexBuffer<Vertex>::Initialize(ID3D11Device *,T *,UINT)'
-          with
-          [
-              T=Vertex
-          ]
-  e:\projects\soundvisualisersource\trunk\src\graphics\graphics.cpp(674): note: see reference to function template instantiation 'HRESULT VertexBuffer<Vertex>::Initialize(ID3D11Device *,T *,UINT)' being compiled
-          with
-          [
-              T=Vertex
-          ]
-  e:\projects\soundvisualisersource\trunk\src\graphics\graphics.h(46): note: see reference to class template instantiation 'VertexBuffer<Vertex>' being compiled
-  Shaders.cpp
-  RenderWindow.cpp
-e:\projects\soundvisualisersource\trunk\src\renderwindow.cpp(125): warning C4065: switch statement contains 'default' but no 'case' labels
-  Source.cpp
-  Generating Code...
-LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
-  Visualiser.vcxproj -> E:\Projects\SoundVisualiserSource\trunk\src\x64\Debug\Visualiser.exe
+  compilation object save succeeded; see D:\Tests\SoundVisualiserSource\trunk\src\x64\Debug\pixelshader.cso
+  Visualiser.vcxproj -> D:\Tests\SoundVisualiserSource\trunk\src\x64\Debug\Visualiser.exe
