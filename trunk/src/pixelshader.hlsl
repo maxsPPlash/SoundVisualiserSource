@@ -76,15 +76,19 @@ float4 main(PS_INPUT input) : SV_TARGET
 
 	float intro_coef = time > intro_time ? 0.0 : 1 - (time / intro_time);
 
-	// background
-	float dist = pow(pow(uv.x - ratio*0.5, 2) + pow(uv.y - 0.5, 2), 0.5)*1.85 * (0.4*smoothstep(0.0, 0.5, abs(uv.y - 0.5))+0.6);
-//	float dist = 8 * intro_coef *(abs(uv.y - 0.5)+0.1)+(pow(pow(uv.x - ratio*0.5, 2) + pow(uv.y - 0.5, 2), 0.5)*1.7 * (0.3*smoothstep(0.0, 0.5, abs(uv.y - 0.5))+0.7));
-	float3 col = lerp(0.8, 0.05, smoothstep(0.3, 0.8, dist-0.2));
-
 	// wrap to circle
 	float2 crc_uv;
-	crc_uv.y = pow(pow(uv.x - ratio*0.5, 2) + pow(uv.y - 0.5, 2), 0.5) * 1.5;
-	crc_uv.x = (pi + atan2(uv.y - 0.5, uv.x - ratio*0.5)) / (pi*2);
+	crc_uv.y = pow(pow(uv.x - ratio * 0.5, 2) + pow(uv.y - 0.5, 2), 0.5) * 1.5;
+	crc_uv.x = (pi + atan2(uv.y - 0.5, uv.x - ratio * 0.5)) / (pi * 2);
+//	crc_uv = uv;
+
+	// background
+	float dist = pow(pow(uv.x - ratio*0.5, 2) + pow(uv.y - 0.5, 2), 0.5)*1.85 * (0.4*smoothstep(0.0, 0.5, abs(uv.y - 0.5))+0.6);
+	float corcle_coef = sin((crc_uv.x + time / 25.f)*pi * 8.0) * sin((crc_uv.x + time / 30.f)*pi * 4.0);
+	corcle_coef = (corcle_coef + 0.5) / 20.f;
+	dist *= 1.f + corcle_coef;
+//	float dist = 8 * intro_coef *(abs(uv.y - 0.5)+0.1)+(pow(pow(uv.x - ratio*0.5, 2) + pow(uv.y - 0.5, 2), 0.5)*1.7 * (0.3*smoothstep(0.0, 0.5, abs(uv.y - 0.5))+0.7));
+	float3 col = lerp(0.8, 0.05, smoothstep(0.3, 0.9, dist-0.2));
 
 	float local_tent_len = tent_len - cam_pos;
 
