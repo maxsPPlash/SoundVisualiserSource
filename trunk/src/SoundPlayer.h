@@ -1,7 +1,7 @@
 #pragma once
-#include "ISound.h"
+#include "ISoundFile.h"
 
 class SoundPlayer {
 public:
-	bool Play(ISound *snd);
+	bool Play(ISoundFile *snd);
 };

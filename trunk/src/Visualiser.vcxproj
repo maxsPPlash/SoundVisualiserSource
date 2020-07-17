@@ -131,10 +131,12 @@
     <ClInclude Include="Graphics\Graphics.h" />
     <ClInclude Include="Graphics\Shaders.h" />
     <ClInclude Include="Graphics\VertexBuffer.h" />
-    <ClInclude Include="ISound.h" />
-    <ClInclude Include="ISoundAnalyser.h" />
+    <ClInclude Include="ISoundStream.h" />
+    <ClInclude Include="ISoundFile.h" />
     <ClInclude Include="SoundPlayer.h" />
-    <ClInclude Include="WAVSound.h" />
+    <ClInclude Include="SoundStreamFile.h" />
+    <ClInclude Include="TentacleVis.h" />
+    <ClInclude Include="WAVSoundFile.h" />
     <ClInclude Include="IRecorder.h" />
     <ClInclude Include="Recorder.h" />
     <ClInclude Include="RenderWindow.h" />
@@ -150,11 +152,21 @@
     <ClCompile Include="RenderWindow.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="SoundPlayer.cpp" />
-    <ClCompile Include="WAVSound.cpp" />
+    <ClCompile Include="SoundStreamFile.cpp" />
+    <ClCompile Include="TentacleVis.cpp" />
+    <ClCompile Include="WAVSoundFile.cpp" />
     <ClCompile Include="SoundAnalyser.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="pixelshader.hlsl">
+    <FxCompile Include="tentacle_bass.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="tentacle_freqs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="pixelshader_simplefreq.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>

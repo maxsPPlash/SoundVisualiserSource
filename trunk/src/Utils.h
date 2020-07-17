@@ -39,3 +39,11 @@ inline float smoothstep(float edge0, float edge1, float x) {
   // Evaluate polynomial
   return x * x * (3 - 2 * x);
 }
+
+inline unsigned char snd_float2byte(float val) {
+	return unsigned char(clamp(val, 0.f, 1.f) * 255.f);
+}
+
+inline unsigned short snd_float2short(float val) {
+	return unsigned short(clamp(val, 0.f, 1.f) * 0xFFFF);
+}

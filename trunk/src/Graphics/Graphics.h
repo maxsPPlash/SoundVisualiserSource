@@ -13,14 +13,14 @@
 class Graphics
 {
 public:
-	bool Initialize(HWND hwnd, int width, int height, IRecorder *frame_recorder);
+	bool Initialize(HWND hwnd, int width, int height, IRecorder *frame_recorder, const std::wstring &shader_name);
 	void RenderFrame();
 
 	CB_VS_vertexshader &data() { return shader_data; }
-	void tdata(unsigned char *val) { texture_data = val; }
+	void tdata(unsigned short *val) { texture_data = val; }
 private:
 	bool InitializeDirectX(HWND hwnd, int width, int height);
-	bool InitializeShaders();
+	bool InitializeShaders(const std::wstring &shader_name);
 	bool InitializeScene();
 
 	Microsoft::WRL::ComPtr<ID3D11Device> device;
@@ -52,7 +52,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> myTexture1;
 
 	CB_VS_vertexshader shader_data;
-	unsigned char *texture_data;
+	unsigned short *texture_data;
 
 	float width;
 	float height;

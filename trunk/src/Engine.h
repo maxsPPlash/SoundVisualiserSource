@@ -3,35 +3,33 @@
 #include "Graphics/Graphics.h"
 #include <chrono>
 
-class Recorder;
-class WAVSound;
-class SoundPlayer;
-class SoundAnalyser;
+#include "Recorder.h"
+#include "WAVSoundFile.h"
+#include "SoundPlayer.h"
+#include "SoundAnalyser.h"
+#include "SoundStreamFile.h"
+
+//class Recorder;
+//class WAVSound;
+//class SoundPlayer;
+//class SoundAnalyser;
+
+constexpr int fft_res_size = 512;
 
 class Engine
 {
+public:
+	Engine();
+	virtual ~Engine();
+
+	bool Initialize(HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height, IRecorder *recorder, const std::wstring &shader_name);
+	bool ProcessMessages();
+	virtual void Update();
+	void RenderFrame();
+
 protected:
 	RenderWindow render_window;
 	Graphics gfx;
 
-	Recorder *recorder;
-	WAVSound *snd;
-	SoundPlayer *player;
-	SoundAnalyser *analyser;
-
-	std::chrono::time_point<std::chrono::steady_clock> start_time;
-	std::chrono::time_point<std::chrono::steady_clock> prev_time;
-
 	int width, height;
-	float time;
-	float tent_len;
-	float cam_pos;
-
-public:
-	Engine();
-
-	bool Initialize(HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height);
-	bool ProcessMessages();
-	void Update();
-	void RenderFrame();
 };

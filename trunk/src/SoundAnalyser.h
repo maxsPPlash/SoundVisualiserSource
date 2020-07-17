@@ -1,18 +1,21 @@
 #pragma once
-#include "ISoundAnalyser.h"
-#include "ISound.h"
+//#include "ISound.h"
 
-class SoundAnalyser : public ISoundAnalyser {
+class SoundAnalyser  {
 public:
-	SoundAnalyser(ISound *sound) : snd(sound) { }
+	SoundAnalyser() {}
 
-	virtual void Update();
-	virtual void GetData(SoundData &res);
+	bool CalcFFT_log(float *input, int input_sz, int input_stride, float *output, int output_sz);
+
+//	SoundAnalyser(ISound *sound) : snd(sound) { }
+
+//	virtual void Update();
+//	virtual void GetData(SoundData &res);
 
 public:
-	ISound *snd;
+//	ISound *snd;
 
-	SoundData data;
+//	SoundData data;
 
-	unsigned char fft_data[512];
+//	unsigned char fft_data[512];
 };

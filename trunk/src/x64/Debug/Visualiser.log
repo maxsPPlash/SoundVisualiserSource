@@ -1,7 +1,0 @@
-﻿D:\Tests\SoundVisualiserSource\trunk\src\pixelshader.hlsl(79,18-35): warning X3203: signed/unsigned mismatch, unsigned assumed
-D:\Tests\SoundVisualiserSource\trunk\src\pixelshader.hlsl(111,19-37): warning X3203: signed/unsigned mismatch, unsigned assumed
-D:\Tests\SoundVisualiserSource\trunk\src\pixelshader.hlsl(140,4-49): warning X3206: implicit truncation of vector type
-D:\Tests\SoundVisualiserSource\trunk\src\pixelshader.hlsl(142,10-93): warning X3206: 'lerp': implicit truncation of vector type
-  
-  compilation object save succeeded; see D:\Tests\SoundVisualiserSource\trunk\src\x64\Debug\pixelshader.cso
-  Visualiser.vcxproj -> D:\Tests\SoundVisualiserSource\trunk\src\x64\Debug\Visualiser.exe

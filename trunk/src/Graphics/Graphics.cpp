@@ -2,14 +2,14 @@
 #include <ctime>
 #include <algorithm>
 
-bool Graphics::Initialize(HWND hwnd, int wnd_width, int wnd_height, IRecorder *frame_recorder)
+bool Graphics::Initialize(HWND hwnd, int wnd_width, int wnd_height, IRecorder *frame_recorder, const std::wstring &shader_name)
 {
 	recorder = frame_recorder;
 
 	if (!InitializeDirectX(hwnd, wnd_width, wnd_height))
 		return false;
 
-	if (!InitializeShaders())
+	if (!InitializeShaders(shader_name))
 		return false;
 
 	if (!InitializeScene())
@@ -47,7 +47,7 @@ void Graphics::RenderFrame()
 
 	D3D11_MAPPED_SUBRESOURCE mappedtResource;
 	hr = this->deviceContext->Map(pTexture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedtResource);
-	CopyMemory(mappedtResource.pData, texture_data, sizeof(unsigned char) * 512);
+	CopyMemory(mappedtResource.pData, texture_data, sizeof(unsigned short) * 512);
 	this->deviceContext->Unmap(pTexture.Get(), 0);
 
 
@@ -263,7 +263,7 @@ bool Graphics::InitializeDirectX(HWND hwnd, int wnd_width, int wnd_height)
 	return true;
 }
 
-bool Graphics::InitializeShaders()
+bool Graphics::InitializeShaders(const std::wstring &shader_name)
 {
 
 	std::wstring shaderfolder = L"";
@@ -296,7 +296,7 @@ bool Graphics::InitializeShaders()
 	if (!vertexshader.Initialize(this->device, shaderfolder + L"vertexshader.cso", layout, numElements))
 		return false;
 
-	if (!pixelshader.Initialize(this->device, shaderfolder + L"pixelshader.cso"))
+	if (!pixelshader.Initialize(this->device, shaderfolder + shader_name + L".cso"/*L"pixelshader.cso"*/))
 		return false;
 
 
@@ -341,7 +341,7 @@ bool Graphics::InitializeScene()
 	tdesc.Width = 512;
 	tdesc.Height = 1;
 	tdesc.MipLevels = tdesc.ArraySize = 1;
-	tdesc.Format = DXGI_FORMAT_R8_UNORM;
+	tdesc.Format = DXGI_FORMAT_R16_UNORM;
 	tdesc.SampleDesc.Count = 1;
 	tdesc.SampleDesc.Quality = 0;
 	tdesc.Usage = D3D11_USAGE_DYNAMIC;
