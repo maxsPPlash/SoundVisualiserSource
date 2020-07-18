@@ -1,6 +1,7 @@
 #include "Graphics.h"
 #include <ctime>
 #include <algorithm>
+#include "../IVideoStream.h"
 
 bool Graphics::Initialize(HWND hwnd, int wnd_width, int wnd_height, IRecorder *frame_recorder, const std::wstring &shader_name)
 {
@@ -16,6 +17,10 @@ bool Graphics::Initialize(HWND hwnd, int wnd_width, int wnd_height, IRecorder *f
 		return false;
 
 	return true;
+}
+
+void Graphics::vdata(IVideoStream *val) {
+	video = val;
 }
 
 //DWORD rgba2argb(DWORD val) {
@@ -57,13 +62,30 @@ void Graphics::RenderFrame()
 	this->deviceContext->Unmap(constantBuffer.Get(), 0);
 	this->deviceContext->PSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
 
+	//Video texture
+	{
+		D3D11_MAPPED_SUBRESOURCE mappedTex;
+		hr = this->deviceContext->Map(pVideoTexture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedTex);
+		if (FAILED(hr))
+		{
+			throw std::runtime_error("surface mapping failed!");
+		}
+
+		video->CopyFrame(mappedTex.pData, mappedTex.RowPitch);
+
+		this->deviceContext->Unmap(pVideoTexture.Get(), 0);
+	}
+
+
 	//Square
 	UINT offset = 0;
 	this->deviceContext->PSSetShaderResources(0, 1, this->myTexture.GetAddressOf());
 	this->deviceContext->PSSetShaderResources(1, 1, this->myTexture1.GetAddressOf());
+	this->deviceContext->PSSetShaderResources(2, 1, this->myVideoTexture.GetAddressOf());
 	this->deviceContext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), vertexBuffer.StridePtr(), &offset);
 	this->deviceContext->IASetIndexBuffer(indicesBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	this->deviceContext->DrawIndexed(indicesBuffer.BufferSize(), 0, 0);
+
 
 	if (recorder/* && recorder->Finished()*/) {
 		Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer;
@@ -272,7 +294,7 @@ bool Graphics::InitializeShaders(const std::wstring &shader_name)
 	{
 #ifdef _DEBUG //Debug Mode
 	#ifdef _WIN64 //x64
-			shaderfolder = L"x64\\Debug\\";
+			shaderfolder = L"..\\bin\\";//L"x64\\Debug\\";
 	#else  //x86 (Win32)
 			shaderfolder = L"Debug\\";
 	#endif
@@ -371,6 +393,42 @@ bool Graphics::InitializeScene()
 	{
 		Log(hr, "Failed to create wic texture from file.");
 		return false;
+	}
+
+	// Video texture
+	{
+		D3D11_TEXTURE2D_DESC desc_rgba;
+		desc_rgba.Width              = 352;
+		desc_rgba.Height             = 288;
+		desc_rgba.MipLevels          = 1;
+		desc_rgba.ArraySize          = 1;
+		desc_rgba.Format             = DXGI_FORMAT_R8G8B8A8_UNORM;
+		desc_rgba.SampleDesc.Count   = 1;
+		desc_rgba.SampleDesc.Quality = 0;
+		desc_rgba.BindFlags          = D3D11_BIND_SHADER_RESOURCE;
+		desc_rgba.Usage              = D3D11_USAGE_DYNAMIC;
+		desc_rgba.CPUAccessFlags     = D3D11_CPU_ACCESS_WRITE;
+		desc_rgba.MiscFlags          = 0;
+
+		hr = device->CreateTexture2D(&desc_rgba, 0, &pVideoTexture);
+		if(FAILED(hr))
+		{
+			return false;
+		}
+
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+		// Setup the shader resource view description.
+		srvDesc.Format = desc_rgba.Format;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MostDetailedMip = 0;
+		srvDesc.Texture2D.MipLevels = -1;
+
+		// Create the shader resource view for the texture.
+		hr = device->CreateShaderResourceView(pVideoTexture.Get(), &srvDesc, &myVideoTexture);
+		if(FAILED(hr))
+		{
+			return false;
+		}
 	}
 
 	//Initialize Constant Buffer(s)

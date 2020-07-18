@@ -10,6 +10,8 @@
 #include "ConstantBufferTypes.h"
 #include "../IRecorder.h"
 
+class IVideoStream;
+
 class Graphics
 {
 public:
@@ -18,6 +20,7 @@ public:
 
 	CB_VS_vertexshader &data() { return shader_data; }
 	void tdata(unsigned short *val) { texture_data = val; }
+	void vdata(IVideoStream *val);
 private:
 	bool InitializeDirectX(HWND hwnd, int width, int height);
 	bool InitializeShaders(const std::wstring &shader_name);
@@ -49,10 +52,14 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> myTexture;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture;
 
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> pVideoTexture;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> myVideoTexture;
+
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> myTexture1;
 
 	CB_VS_vertexshader shader_data;
 	unsigned short *texture_data;
+	IVideoStream *video;
 
 	float width;
 	float height;

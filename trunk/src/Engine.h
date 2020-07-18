@@ -8,6 +8,7 @@
 #include "SoundPlayer.h"
 #include "SoundAnalyser.h"
 #include "SoundStreamFile.h"
+#include "IVideoStream.h"
 
 //class Recorder;
 //class WAVSound;

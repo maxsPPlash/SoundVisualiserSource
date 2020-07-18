@@ -24,11 +24,36 @@ Texture2D objTexture1 : TEXTURE : register(t1);
 #define MAX_DIST 100.f
 #define SURF_DIST .01f
 
+float sdCapsule(float3 p, float3 a, float3 b, float r) {
+	float3 ab = b - a;
+	float3 ap = p - a;
+
+	float t = dot(ab, ap) / dot(ab, ab);
+	t = clamp(t, 0, 1);
+
+	float3 c = a + t*ab;
+	return length(p-c) - r;
+}
+
+float sdTorus(float3 p, float2 r) {
+	float x = length(p.xz) - r.x;
+	return length(float2(x, p.y)) - r.y;
+}
+
+float dBox(float3 p, float3 hsize) {
+	return length(max(abs(p) - hsize, 0.f));
+}
+
 float GetDist(float3 p) {
 	float4 sphere = float4(0.f, 1.f, 6.f, 1.f);
 	float dS = length(p - sphere.xyz) - sphere.w;
 	float dP = p.y;
-	float d = min(dS, dP);
+
+	float cd = sdCapsule(p, float3(0, 1, 6), float3(1, 2, 6), .2);
+//	float td = sdTorus(p-float3(0, 0.5, 6), float2(2.f, 0.1));
+	float bd = dBox(p-float3(-1, 1.5, 6), float3(0.3, 0.5, 1.0));
+	float d = min(bd, dP);
+	d = min(d, cd);
 	return d;
 }
 
@@ -43,21 +68,21 @@ float RayMarch(float3 ro, float3 rd) {
 	return dO;
 }
 
-float soft_rand(float n)
-{
-    return frac(sin(n)*43758.5453);
-}
-float rand(float n)
-{
-    return frac(sin(n)*43758.5453);
-}
-float rand2d(float2 v)
-{
-	float2 K1 = float2(23.14069263277926,2.665144142690225);
-	return frac( cos( dot(v,K1) ) * 12345.6789 );
-
-//    return frac(sin(dot(v, float2(12.9898,78.233))*43758.5453));
-}
+//float soft_rand(float n)
+//{
+//    return frac(sin(n)*43758.5453);
+//}
+//float rand(float n)
+//{
+//    return frac(sin(n)*43758.5453);
+//}
+//float rand2d(float2 v)
+//{
+//	float2 K1 = float2(23.14069263277926,2.665144142690225);
+//	return frac( cos( dot(v,K1) ) * 12345.6789 );
+//
+////    return frac(sin(dot(v, float2(12.9898,78.233))*43758.5453));
+//}
 
 float3 GetNormal(float3 p) {
 	float d = GetDist(p);

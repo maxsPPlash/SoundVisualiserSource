@@ -69,7 +69,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)\..\bin</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -87,12 +89,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\SDK\fftw-3.3.5-dll64;..\SDK\libsndfile\include;..\SDK\libpng;..\SDK\DirectXTK-master\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\SDK\fftw-3.3.5-dll64;..\SDK\libsndfile\include;..\SDK\libpng;..\SDK\DirectXTK-master\Inc;..\SDK\opencv\build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>..\SDK\fftw-3.3.5-dll64;..\SDK\libsndfile\lib;..\SDK\libpng;..\SDK\libzlib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libfftw3f-3.lib;libsndfile-1.lib;libpng.lib;libZLib.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\SDK\fftw-3.3.5-dll64;..\SDK\libsndfile\lib;..\SDK\libpng;..\SDK\libzlib;..\SDK\opencv\build\x64\vc15\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libfftw3f-3.lib;libsndfile-1.lib;libpng.lib;libZLib.lib;winmm.lib;opencv_world440d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -133,10 +135,13 @@
     <ClInclude Include="Graphics\VertexBuffer.h" />
     <ClInclude Include="ISoundStream.h" />
     <ClInclude Include="ISoundFile.h" />
+    <ClInclude Include="IVideoStream.h" />
+    <ClInclude Include="OpenCVVideoStream.h" />
     <ClInclude Include="RaymarchingVis.h" />
     <ClInclude Include="SoundPlayer.h" />
     <ClInclude Include="SoundStreamFile.h" />
     <ClInclude Include="TentacleVis.h" />
+    <ClInclude Include="VideoVis.h" />
     <ClInclude Include="WAVSoundFile.h" />
     <ClInclude Include="IRecorder.h" />
     <ClInclude Include="Recorder.h" />
@@ -149,6 +154,7 @@
     <ClCompile Include="Graphics\AdapterReader.cpp" />
     <ClCompile Include="Graphics\Graphics.cpp" />
     <ClCompile Include="Graphics\Shaders.cpp" />
+    <ClCompile Include="OpenCVVideoStream.cpp" />
     <ClCompile Include="RaymarchingVis.cpp" />
     <ClCompile Include="Recorder.cpp" />
     <ClCompile Include="RenderWindow.cpp" />
@@ -156,6 +162,7 @@
     <ClCompile Include="SoundPlayer.cpp" />
     <ClCompile Include="SoundStreamFile.cpp" />
     <ClCompile Include="TentacleVis.cpp" />
+    <ClCompile Include="VideoVis.cpp" />
     <ClCompile Include="WAVSoundFile.cpp" />
     <ClCompile Include="SoundAnalyser.cpp" />
   </ItemGroup>
@@ -178,6 +185,10 @@
     </FxCompile>
     <FxCompile Include="vertexshader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="video.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>
   </ItemGroup>

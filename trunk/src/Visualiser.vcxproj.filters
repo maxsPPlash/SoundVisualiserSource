@@ -35,6 +35,9 @@
     <Filter Include="Visual\Raymarching">
       <UniqueIdentifier>{96bff3b4-6115-4c61-9ad8-2c84ce303293}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Visual\VideoTest">
+      <UniqueIdentifier>{3d9f4502-eb6b-4ffa-a0f1-0f2023d97ab2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ISoundFile.h">
@@ -88,6 +91,15 @@
     <ClInclude Include="RaymarchingVis.h">
       <Filter>Visual\Raymarching</Filter>
     </ClInclude>
+    <ClInclude Include="IVideoStream.h">
+      <Filter>Input Data\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenCVVideoStream.h">
+      <Filter>Input Data</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoVis.h">
+      <Filter>Visual\VideoTest</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WAVSoundFile.cpp">
@@ -129,6 +141,12 @@
     <ClCompile Include="RaymarchingVis.cpp">
       <Filter>Visual\Raymarching</Filter>
     </ClCompile>
+    <ClCompile Include="OpenCVVideoStream.cpp">
+      <Filter>Input Data</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoVis.cpp">
+      <Filter>Visual\VideoTest</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="vertexshader.hlsl">
@@ -145,6 +163,9 @@
     </FxCompile>
     <FxCompile Include="raymarching.hlsl">
       <Filter>Visual\Raymarching</Filter>
+    </FxCompile>
+    <FxCompile Include="video.hlsl">
+      <Filter>Visual\VideoTest</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

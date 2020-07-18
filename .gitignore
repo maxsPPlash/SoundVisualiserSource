@@ -34,3 +34,4 @@
 # Visual Studio 2015/2017 cache/options directory
 *vs/
 trunk/src/x64/*
+*.cso
