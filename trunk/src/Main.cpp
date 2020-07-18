@@ -1,5 +1,6 @@
 //Tutorial 24 Solution 2018-09-30
-#include "TentacleVis.h"
+//#include "TentacleVis.h"
+#include "RaymarchingVis.h"
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -14,7 +15,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return -1;
 	}
 
-	TentacleVis engine;
+	RaymarchingVis engine;
 	if (engine.Initialize(hInstance, "Title", "MyWindowClass", 800, 450)) // , 1280, 720 // 512, 512
 	{
 		while (engine.ProcessMessages() == true)

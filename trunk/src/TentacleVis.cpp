@@ -1,9 +1,9 @@
 #include "TentacleVis.h"
 
-const char *frame_save_path = "imgs\\img_";
+static const char *frame_save_path = "imgs\\img_";
 //const char *file_path = "./test_shader.wav";
 //const char *file_path = "./Summer.wav";
-const char *file_path = "./GoFuckYourself.wav";
+static const char *file_path = "./GoFuckYourself.wav";
 //const char *file_path = "./BrianJames.wav";
 
 constexpr int sound_step = 2048;

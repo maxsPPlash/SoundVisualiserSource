@@ -32,7 +32,7 @@
     <Filter Include="Visual\Tentacle">
       <UniqueIdentifier>{28babc00-69b4-49e1-be58-ff141b0228b7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Visual\Temp">
+    <Filter Include="Visual\Raymarching">
       <UniqueIdentifier>{96bff3b4-6115-4c61-9ad8-2c84ce303293}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -85,6 +85,9 @@
     <ClInclude Include="TentacleVis.h">
       <Filter>Visual\Tentacle</Filter>
     </ClInclude>
+    <ClInclude Include="RaymarchingVis.h">
+      <Filter>Visual\Raymarching</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WAVSoundFile.cpp">
@@ -123,6 +126,9 @@
     <ClCompile Include="TentacleVis.cpp">
       <Filter>Visual\Tentacle</Filter>
     </ClCompile>
+    <ClCompile Include="RaymarchingVis.cpp">
+      <Filter>Visual\Raymarching</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="vertexshader.hlsl">
@@ -136,6 +142,9 @@
     </FxCompile>
     <FxCompile Include="tentacle_bass.hlsl">
       <Filter>Visual\Tentacle</Filter>
+    </FxCompile>
+    <FxCompile Include="raymarching.hlsl">
+      <Filter>Visual\Raymarching</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

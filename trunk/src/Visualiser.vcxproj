@@ -133,6 +133,7 @@
     <ClInclude Include="Graphics\VertexBuffer.h" />
     <ClInclude Include="ISoundStream.h" />
     <ClInclude Include="ISoundFile.h" />
+    <ClInclude Include="RaymarchingVis.h" />
     <ClInclude Include="SoundPlayer.h" />
     <ClInclude Include="SoundStreamFile.h" />
     <ClInclude Include="TentacleVis.h" />
@@ -148,6 +149,7 @@
     <ClCompile Include="Graphics\AdapterReader.cpp" />
     <ClCompile Include="Graphics\Graphics.cpp" />
     <ClCompile Include="Graphics\Shaders.cpp" />
+    <ClCompile Include="RaymarchingVis.cpp" />
     <ClCompile Include="Recorder.cpp" />
     <ClCompile Include="RenderWindow.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -158,6 +160,10 @@
     <ClCompile Include="SoundAnalyser.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="raymarching.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="tentacle_bass.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
