@@ -12,11 +12,6 @@ RaymarchingVis::RaymarchingVis() {
 	recorder = 0;
 	snd = 0;
 	snd_stream = 0;
-//	inited = false;
-
-	for (int i = 0; i < fft_res_size; ++i) {
-		tent_len_data[i] = 0;
-	}
 }
 
 RaymarchingVis::~RaymarchingVis() {
@@ -32,13 +27,16 @@ bool RaymarchingVis::Initialize(HINSTANCE hInstance, std::string window_title, s
 //	player.Play(snd);
 	prev_time = start_time = std::chrono::steady_clock::now();
 
-	CB_VS_vertexshader &data = gfx.data();
-	data.width = width;
-	data.height = height;
-//	data.tent_len = 0;
-	gfx.tdata(tent_len_data);
+	scb.Data(&cbuffer);
+	scb.Size(sizeof(cbuffer));
 
-	return Engine::Initialize(hInstance, window_title, window_class, width, height, recorder, L"raymarching");
+	cbuffer.width = width;
+	cbuffer.height = height;
+
+	std::vector<IDynamicTexture*> dyn_textures;
+	std::vector<IStaticTexture*> stat_textures;
+
+	return Engine::Initialize(hInstance, window_title, window_class, width, height, recorder, L"raymarching", &scb, dyn_textures, stat_textures);
 }
 
 template <typename T, int size, int window_h_size>
@@ -69,8 +67,6 @@ void RaymarchingVis::Update() {
 
 	if (snd_stream->Finished()) return;
 
-	CB_VS_vertexshader &data = gfx.data();
-
 	// FOR CAPTURE
 	//	float dt = 1.f/30.f;
 	//	time += dt;
@@ -82,7 +78,7 @@ void RaymarchingVis::Update() {
 	float dt = cdt.count();
 	time = diff.count();
 
-	data.time = time;
+	cbuffer.time = time;
 	prev_time = cur_time;
 
 	if (snd_updated) {

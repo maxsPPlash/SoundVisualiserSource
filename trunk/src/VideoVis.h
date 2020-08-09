@@ -1,5 +1,15 @@
 #pragma once
 #include "Engine.h"
+#include "ShaderVideoTexture.h"
+
+struct video_t_const_buffer
+{
+	int width = 0;
+	int height = 0;
+	float time = 0;
+
+	float bass_coef = 0;
+};
 
 class VideoVis : public Engine {
 public:
@@ -16,6 +26,11 @@ private:
 	IVideoStream *video_stream;
 	SoundPlayer player;
 	SoundAnalyser analyser;
+
+	video_t_const_buffer cbuffer;
+	ShaderConstBuffer scb;
+
+	ShaderVideoTexture *video_tex;
 
 	std::chrono::time_point<std::chrono::steady_clock> start_time;
 	std::chrono::time_point<std::chrono::steady_clock> prev_time;

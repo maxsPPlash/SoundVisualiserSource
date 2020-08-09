@@ -1,6 +1,13 @@
 #pragma once
 #include "Engine.h"
 
+struct rey_marching_const_buffer
+{
+	int width = 0;
+	int height = 0;
+	float time = 0;
+};
+
 class RaymarchingVis : public Engine {
 public:
 	RaymarchingVis();
@@ -18,6 +25,9 @@ private:
 
 	std::chrono::time_point<std::chrono::steady_clock> start_time;
 	std::chrono::time_point<std::chrono::steady_clock> prev_time;
+
+	rey_marching_const_buffer cbuffer;
+	ShaderConstBuffer scb;
 
 	float time;
 

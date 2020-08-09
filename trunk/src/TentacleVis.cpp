@@ -28,6 +28,9 @@ TentacleVis::TentacleVis() {
 TentacleVis::~TentacleVis() {
 	delete snd;
 	delete snd_stream;
+
+	delete audo_data_tex;
+	delete image;
 }
 
 bool TentacleVis::Initialize(HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height) {
@@ -38,13 +41,22 @@ bool TentacleVis::Initialize(HINSTANCE hInstance, std::string window_title, std:
 	player.Play(snd);
 	prev_time = start_time = std::chrono::steady_clock::now();
 
-	CB_VS_vertexshader &data = gfx.data();
-	data.width = width;
-	data.height = height;
-	data.tent_len = 0;
-	gfx.tdata(tent_len_data);
+	scb.Data(&cbuffer);
+	scb.Size(sizeof(cbuffer));
 
-	return Engine::Initialize(hInstance, window_title, window_class, width, height, recorder, use_freqs ? L"tentacle_freqs" : L"tentacle_bass");
+	audo_data_tex = new ShaderDynTexture(tent_len_data, 1, 512, DT_U16R, 0);
+	std::vector<IDynamicTexture*> dyn_textures;
+	dyn_textures.push_back(audo_data_tex);
+
+	image = new ShaderStaticTexture(L"Data\\Textures\\piano.png", 1);
+	std::vector<IStaticTexture*> stat_textures;
+	stat_textures.push_back(image);
+
+	cbuffer.width = width;
+	cbuffer.height = height;
+	cbuffer.tent_len = 0;
+
+	return Engine::Initialize(hInstance, window_title, window_class, width, height, recorder, use_freqs ? L"tentacle_freqs" : L"tentacle_bass", &scb, dyn_textures, stat_textures);
 }
 
 template <typename T, int size, int window_h_size>
@@ -84,8 +96,6 @@ void TentacleVis::UpdateFreqs()
 
 	if (snd_stream->Finished()) return;
 
-	CB_VS_vertexshader &data = gfx.data();
-
 // FOR CAPTURE
 //	float dt = 1.f/30.f;
 //	time += dt;
@@ -97,14 +107,14 @@ void TentacleVis::UpdateFreqs()
 	float dt = cdt.count();
 	time = diff.count();
 
-	data.time = time;
+	cbuffer.time = time;
 	prev_time = cur_time;
 
 	if (snd_updated || !inited) {
 		float fft_res[fft_res_size];
 		analyser.CalcFFT_log(snd_stream->CurData(), sound_step, snd_stream->File()->Channels(), fft_res, fft_res_size);
 
-		data.bass_coef = 0;
+		cbuffer.bass_coef = 0;
 		float tent_len_max = 0.f;
 		for (int i = 0; i < fft_res_size; ++i) {
 			float new_data = fft_res[i];
@@ -114,13 +124,13 @@ void TentacleVis::UpdateFreqs()
 			tent_len_max = max(tent_len_max, tent_len_float[i]);
 
 			if (i < bass_samples_cnt)
-				data.bass_coef += new_data;
+				cbuffer.bass_coef += new_data;
 		}
-		data.bass_coef /= bass_samples_cnt;
+		cbuffer.bass_coef /= bass_samples_cnt;
 
 //		smooth_array<fft_res_size, 32>(tent_len_float);
 
-//		tent_len += (0.05f+smoothstep(0.4f, 0.9f, data.bass_coef)) * dt * 2;
+//		tent_len += (0.05f+smoothstep(0.4f, 0.9f, cbuffer.bass_coef)) * dt * 2;
 //		tent_len_float[0] = tent_len;
 //		tent_len_max = tent_len;
 
@@ -140,7 +150,7 @@ void TentacleVis::UpdateFreqs()
 		}
 		smooth_array<unsigned short, fft_res_size, 32>(tent_len_data);
 
-		data.cam_pos = cam_pos;
+		cbuffer.cam_pos = cam_pos;
 		inited = true;
 	}
 
@@ -155,9 +165,9 @@ void TentacleVis::UpdateFreqs()
 //			tent_len_data[i] -= cam_move;
 ////		tent_len -= cam_move;
 //	}
-//	data.tent_len = tent_len;
-//	data.cam_pos = cam_pos;
-//	data.bass_coef = sdata.fft_bass;
+//	cbuffer.tent_len = tent_len;
+//	cbuffer.cam_pos = cam_pos;
+//	cbuffer.bass_coef = sdata.fft_bass;
 
 //	gfx.tdata(tent_len_data);
 
@@ -171,8 +181,6 @@ void TentacleVis::UpdateBass() {
 
 //	if (snd_stream->Finished()) return;
 
-	CB_VS_vertexshader &data = gfx.data();
-
 // FOR CAPTURE
 //	float dt = 1.f/30.f;
 //	time += dt;
@@ -184,7 +192,7 @@ void TentacleVis::UpdateBass() {
 	float dt = cdt.count();
 	time = diff.count();
 
-	data.time = time;
+	cbuffer.time = time;
 	prev_time = cur_time;
 
 // FOR CAPTURE
@@ -201,7 +209,7 @@ void TentacleVis::UpdateBass() {
 		}
 	}
 	{
-		data.bass_coef = 0;
+		cbuffer.bass_coef = 0;
 		float tent_len_max = 0.f;
 		for (int i = 0; i < fft_res_size; ++i) {
 			float new_data = fft_res[i];
@@ -211,16 +219,16 @@ void TentacleVis::UpdateBass() {
 			tent_len_max = max(tent_len_max, tent_len_float[i]);
 
 			if (i < bass_samples_cnt)
-				data.bass_coef += new_data;
+				cbuffer.bass_coef += new_data;
 		}
-		data.bass_coef /= bass_samples_cnt;
+		cbuffer.bass_coef /= bass_samples_cnt;
 
-		tent_len += (0.05+smoothstep(0.4f, 0.9f, data.bass_coef)) * dt * 2;
-		data.tent_len = tent_len;
+		tent_len += (0.05+smoothstep(0.4f, 0.9f, cbuffer.bass_coef)) * dt * 2;
+		cbuffer.tent_len = tent_len;
 		const float min_tent_len = 0.5f;
 		if (cam_pos + min_tent_len < tent_len) {
 			cam_pos += (tent_len - min_tent_len - cam_pos)* dt * 4.f;
 		}
-		data.cam_pos = cam_pos;
+		cbuffer.cam_pos = cam_pos;
 	}
 }

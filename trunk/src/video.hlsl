@@ -4,8 +4,6 @@ cbuffer mycBuffer : register(b0)
     int wnd_h;
 	float time;
 
-	float _1;
-	float _2;
 	float bass_coef;
 };
 
@@ -17,10 +15,6 @@ struct PS_INPUT
 
 Texture2D objTexture : TEXTURE : register(t0);
 SamplerState objSamplerState : SAMPLER : register(s0);
-
-Texture2D objTexture1 : TEXTURE : register(t1);
-
-Texture2D objTexture2 : TEXTURE : register(t2);
 
 #define MAX_STEPS 100
 #define MAX_DIST 100.f
@@ -65,22 +59,6 @@ float RayMarch(float3 ro, float3 rd) {
 	return dO;
 }
 
-//float soft_rand(float n)
-//{
-//    return frac(sin(n)*43758.5453);
-//}
-//float rand(float n)
-//{
-//    return frac(sin(n)*43758.5453);
-//}
-//float rand2d(float2 v)
-//{
-//	float2 K1 = float2(23.14069263277926,2.665144142690225);
-//	return frac( cos( dot(v,K1) ) * 12345.6789 );
-//
-////    return frac(sin(dot(v, float2(12.9898,78.233))*43758.5453));
-//}
-
 float3 GetNormal(float3 p) {
 	float d = GetDist(p);
 	float2 e = float2(0.01, 0);
@@ -121,9 +99,9 @@ float4 main(PS_INPUT input) : SV_TARGET
 //	col = text_color * (1 - bass_coef) + inv_color * bass_coef;
 
 	float2 offset = float2(.01,.0) * bass_coef;
-	col.r = objTexture2.Sample(objSamplerState, uv+offset.xy).r;
-	col.g = objTexture2.Sample(objSamplerState, uv          ).g;
-	col.b = objTexture2.Sample(objSamplerState, uv+offset.yx).b;
+	col.r = objTexture.Sample(objSamplerState, uv+offset.xy).r;
+	col.g = objTexture.Sample(objSamplerState, uv          ).g;
+	col.b = objTexture.Sample(objSamplerState, uv+offset.yx).b;
 
 	// Output to screen
 	return float4(col,1.0);

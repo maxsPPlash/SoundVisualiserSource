@@ -133,14 +133,22 @@
     <ClInclude Include="Graphics\Graphics.h" />
     <ClInclude Include="Graphics\Shaders.h" />
     <ClInclude Include="Graphics\VertexBuffer.h" />
+    <ClInclude Include="IConstBufferData.h" />
+    <ClInclude Include="IDynamicTexture.h" />
     <ClInclude Include="ISoundStream.h" />
     <ClInclude Include="ISoundFile.h" />
+    <ClInclude Include="IStaticTexture.h" />
     <ClInclude Include="IVideoStream.h" />
     <ClInclude Include="OpenCVVideoStream.h" />
     <ClInclude Include="RaymarchingVis.h" />
+    <ClInclude Include="ShaderConstBuffer.h" />
+    <ClInclude Include="ShaderDynTexture.h" />
+    <ClInclude Include="ShaderStaticTexture.h" />
+    <ClInclude Include="ShaderVideoTexture.h" />
     <ClInclude Include="SoundPlayer.h" />
     <ClInclude Include="SoundStreamFile.h" />
     <ClInclude Include="TentacleVis.h" />
+    <ClInclude Include="TileVis.h" />
     <ClInclude Include="VideoVis.h" />
     <ClInclude Include="WAVSoundFile.h" />
     <ClInclude Include="IRecorder.h" />
@@ -159,9 +167,11 @@
     <ClCompile Include="Recorder.cpp" />
     <ClCompile Include="RenderWindow.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="ShaderDynTexture.cpp" />
     <ClCompile Include="SoundPlayer.cpp" />
     <ClCompile Include="SoundStreamFile.cpp" />
     <ClCompile Include="TentacleVis.cpp" />
+    <ClCompile Include="TileVis.cpp" />
     <ClCompile Include="VideoVis.cpp" />
     <ClCompile Include="WAVSoundFile.cpp" />
     <ClCompile Include="SoundAnalyser.cpp" />
@@ -180,6 +190,10 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="pixelshader_simplefreq.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="tile.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>

@@ -9,18 +9,21 @@
 #include "IndexBuffer.h"
 #include "ConstantBufferTypes.h"
 #include "../IRecorder.h"
+#include "../IConstBufferData.h"
+#include "../IDynamicTexture.h"
+#include "../IStaticTexture.h"
 
 class IVideoStream;
 
 class Graphics
 {
 public:
-	bool Initialize(HWND hwnd, int width, int height, IRecorder *frame_recorder, const std::wstring &shader_name);
+	bool Initialize(HWND hwnd, int width, int height, IRecorder *frame_recorder, const std::wstring &shader_name, IConstBufferData *cbuf, const std::vector<IDynamicTexture*> &dyn_texs, const std::vector<IStaticTexture*> &stat_texs);
 	void RenderFrame();
 
-	CB_VS_vertexshader &data() { return shader_data; }
-	void tdata(unsigned short *val) { texture_data = val; }
-	void vdata(IVideoStream *val);
+//	CB_VS_vertexshader &data() { return shader_data; }
+//	void tdata(unsigned short *val) { texture_data = val; }
+//	void vdata(IVideoStream *val);
 private:
 	bool InitializeDirectX(HWND hwnd, int width, int height);
 	bool InitializeShaders(const std::wstring &shader_name);
@@ -49,15 +52,25 @@ private:
 	std::unique_ptr<DirectX::SpriteFont> spriteFont;
 
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> samplerState;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> myTexture;
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture;
+//	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> myTexture;
+//	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture;
+//
+//	Microsoft::WRL::ComPtr<ID3D11Texture2D> pVideoTexture;
+//	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> myVideoTexture;
+//
+//	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> myTexture1;
 
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> pVideoTexture;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> myVideoTexture;
+	IConstBufferData *shader_data;
+	std::vector<IDynamicTexture*> dyn_textures;
+	std::vector<IStaticTexture*> stat_textures;
+	struct DXDynTexture {
+		Microsoft::WRL::ComPtr<ID3D11Texture2D> Texture;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> TextureResource;
+	};
+	std::vector<DXDynTexture> dx_dyn_textures;
+	typedef Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> DXSatTexture;
+	std::vector<DXSatTexture> dx_stat_textures;
 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> myTexture1;
-
-	CB_VS_vertexshader shader_data;
 	unsigned short *texture_data;
 	IVideoStream *video;
 

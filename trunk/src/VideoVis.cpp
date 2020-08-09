@@ -15,10 +15,6 @@ VideoVis::VideoVis() {
 	snd = 0;
 	snd_stream = 0;
 	inited = false;
-
-	for (int i = 0; i < fft_res_size; ++i) {
-		tent_len_data[i] = 0;
-	}
 }
 
 VideoVis::~VideoVis() {
@@ -37,14 +33,19 @@ bool VideoVis::Initialize(HINSTANCE hInstance, std::string window_title, std::st
 	player.Play(snd);
 	prev_time = start_time = std::chrono::steady_clock::now();
 
-	CB_VS_vertexshader &data = gfx.data();
-	data.width = width;
-	data.height = height;
-//	data.tent_len = 0;
-	gfx.tdata(tent_len_data);
-	gfx.vdata(video_stream);
+	scb.Data(&cbuffer);
+	scb.Size(sizeof(cbuffer));
 
-	return Engine::Initialize(hInstance, window_title, window_class, width, height, recorder, L"video");
+	video_tex = new ShaderVideoTexture(video_stream, 288, 352, 0);
+	std::vector<IDynamicTexture*> dyn_textures;
+	dyn_textures.push_back(video_tex);
+
+	cbuffer.width = width;
+	cbuffer.height = height;
+
+	std::vector<IStaticTexture*> stat_textures;
+
+	return Engine::Initialize(hInstance, window_title, window_class, width, height, recorder, L"video", &scb, dyn_textures, stat_textures);
 }
 
 template <typename T, int size, int window_h_size>
@@ -77,8 +78,6 @@ void VideoVis::Update() {
 
 	if (snd_stream->Finished()) return;
 
-	CB_VS_vertexshader &data = gfx.data();
-
 	// FOR CAPTURE
 	//	float dt = 1.f/30.f;
 	//	time += dt;
@@ -90,7 +89,7 @@ void VideoVis::Update() {
 	float dt = cdt.count();
 	time = diff.count();
 
-	data.time = time;
+	cbuffer.time = time;
 	prev_time = cur_time;
 
 	float fft_res[fft_res_size];
@@ -103,15 +102,15 @@ void VideoVis::Update() {
 		}
 	}
 	{
-		data.bass_coef = 0;
+		cbuffer.bass_coef = 0;
 		float tent_len_max = 0.f;
 		for (int i = 0; i < fft_res_size; ++i) {
 			float new_data = fft_res[i];
 
 			if (i < bass_samples_cnt)
-				data.bass_coef += new_data;
+				cbuffer.bass_coef += new_data;
 		}
-		data.bass_coef /= bass_samples_cnt;
+		cbuffer.bass_coef /= bass_samples_cnt;
 	}
 
 	Engine::Update();

@@ -3,10 +3,6 @@ cbuffer mycBuffer : register(b0)
     int wnd_w;
     int wnd_h;
 	float time;
-
-	float _1;
-	float _2;
-	float _3;
 };
 
 struct PS_INPUT
@@ -15,10 +11,8 @@ struct PS_INPUT
 	float2 inTexCoord : TEXCOORD;
 };
 
-Texture2D objTexture : TEXTURE : register(t0);
 SamplerState objSamplerState : SAMPLER : register(s0);
 
-Texture2D objTexture1 : TEXTURE : register(t1);
 
 #define MAX_STEPS 100
 #define MAX_DIST 100.f

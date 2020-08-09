@@ -38,6 +38,15 @@
     <Filter Include="Visual\VideoTest">
       <UniqueIdentifier>{3d9f4502-eb6b-4ffa-a0f1-0f2023d97ab2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Main\Graphics_connection">
+      <UniqueIdentifier>{9a4869d2-5800-463d-982b-3436273199f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\Interfece">
+      <UniqueIdentifier>{93730110-ad49-4405-a93e-0d14a1ded635}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Visual\Tile">
+      <UniqueIdentifier>{18dc2307-c958-4aa7-bb4e-0a11a05d9580}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ISoundFile.h">
@@ -100,6 +109,30 @@
     <ClInclude Include="VideoVis.h">
       <Filter>Visual\VideoTest</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderConstBuffer.h">
+      <Filter>Main\Graphics_connection</Filter>
+    </ClInclude>
+    <ClInclude Include="IConstBufferData.h">
+      <Filter>Graphics\Interfece</Filter>
+    </ClInclude>
+    <ClInclude Include="IDynamicTexture.h">
+      <Filter>Graphics\Interfece</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderDynTexture.h">
+      <Filter>Main\Graphics_connection</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderVideoTexture.h">
+      <Filter>Main\Graphics_connection</Filter>
+    </ClInclude>
+    <ClInclude Include="IStaticTexture.h">
+      <Filter>Graphics\Interfece</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderStaticTexture.h">
+      <Filter>Main\Graphics_connection</Filter>
+    </ClInclude>
+    <ClInclude Include="TileVis.h">
+      <Filter>Visual\Tile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WAVSoundFile.cpp">
@@ -147,6 +180,12 @@
     <ClCompile Include="VideoVis.cpp">
       <Filter>Visual\VideoTest</Filter>
     </ClCompile>
+    <ClCompile Include="ShaderDynTexture.cpp">
+      <Filter>Main\Graphics_connection</Filter>
+    </ClCompile>
+    <ClCompile Include="TileVis.cpp">
+      <Filter>Visual\Tile</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="vertexshader.hlsl">
@@ -166,6 +205,9 @@
     </FxCompile>
     <FxCompile Include="video.hlsl">
       <Filter>Visual\VideoTest</Filter>
+    </FxCompile>
+    <FxCompile Include="tile.hlsl">
+      <Filter>Visual\Tile</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

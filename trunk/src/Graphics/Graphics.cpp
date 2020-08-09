@@ -3,8 +3,11 @@
 #include <algorithm>
 #include "../IVideoStream.h"
 
-bool Graphics::Initialize(HWND hwnd, int wnd_width, int wnd_height, IRecorder *frame_recorder, const std::wstring &shader_name)
+bool Graphics::Initialize(HWND hwnd, int wnd_width, int wnd_height, IRecorder *frame_recorder, const std::wstring &shader_name, IConstBufferData *cbuf, const std::vector<IDynamicTexture*> &dyn_texs, const std::vector<IStaticTexture*> &stat_texs)
 {
+	shader_data = cbuf;
+	dyn_textures = dyn_texs;
+	stat_textures = stat_texs;
 	recorder = frame_recorder;
 
 	if (!InitializeDirectX(hwnd, wnd_width, wnd_height))
@@ -19,9 +22,9 @@ bool Graphics::Initialize(HWND hwnd, int wnd_width, int wnd_height, IRecorder *f
 	return true;
 }
 
-void Graphics::vdata(IVideoStream *val) {
-	video = val;
-}
+//void Graphics::vdata(IVideoStream *val) {
+//	video = val;
+//}
 
 //DWORD rgba2argb(DWORD val) {
 ////	return val >> 8 | 0xFF000000;
@@ -50,38 +53,60 @@ void Graphics::RenderFrame()
 	this->deviceContext->VSSetShader(vertexshader.GetShader(), NULL, 0);
 	this->deviceContext->PSSetShader(pixelshader.GetShader(), NULL, 0);
 
-	D3D11_MAPPED_SUBRESOURCE mappedtResource;
-	hr = this->deviceContext->Map(pTexture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedtResource);
-	CopyMemory(mappedtResource.pData, texture_data, sizeof(unsigned short) * 512);
-	this->deviceContext->Unmap(pTexture.Get(), 0);
+//	D3D11_MAPPED_SUBRESOURCE mappedtResource;
+//	hr = this->deviceContext->Map(pTexture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedtResource);
+//	CopyMemory(mappedtResource.pData, texture_data, sizeof(unsigned short) * 512);
+//	this->deviceContext->Unmap(pTexture.Get(), 0);
+
+	if (shader_data) {
+		D3D11_MAPPED_SUBRESOURCE mappedResource;
+		hr = this->deviceContext->Map(constantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		CopyMemory(mappedResource.pData, shader_data->Data(), shader_data->Size());
+		this->deviceContext->Unmap(constantBuffer.Get(), 0);
+		this->deviceContext->PSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
+	}
 
 
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	hr = this->deviceContext->Map(constantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	CopyMemory(mappedResource.pData, &shader_data, sizeof(CB_VS_vertexshader));
-	this->deviceContext->Unmap(constantBuffer.Get(), 0);
-	this->deviceContext->PSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
+	for (int i = 0, size = dyn_textures.size(); i < size; ++i) {
+		DXDynTexture &dx_t = dx_dyn_textures[i];
 
-	//Video texture
-	{
 		D3D11_MAPPED_SUBRESOURCE mappedTex;
-		hr = this->deviceContext->Map(pVideoTexture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedTex);
+		hr = this->deviceContext->Map(dx_t.Texture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedTex);
 		if (FAILED(hr))
 		{
 			throw std::runtime_error("surface mapping failed!");
 		}
 
-		video->CopyFrame(mappedTex.pData, mappedTex.RowPitch);
+		dyn_textures[i]->GetData(mappedTex.pData, mappedTex.RowPitch);
 
-		this->deviceContext->Unmap(pVideoTexture.Get(), 0);
+		this->deviceContext->Unmap(dx_t.Texture.Get(), 0);
 	}
+//	//Video texture
+//	{
+//		D3D11_MAPPED_SUBRESOURCE mappedTex;
+//		hr = this->deviceContext->Map(pVideoTexture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedTex);
+//		if (FAILED(hr))
+//		{
+//			throw std::runtime_error("surface mapping failed!");
+//		}
+//
+//		video->CopyFrame(mappedTex.pData, mappedTex.RowPitch);
+//
+//		this->deviceContext->Unmap(pVideoTexture.Get(), 0);
+//	}
 
 
 	//Square
 	UINT offset = 0;
-	this->deviceContext->PSSetShaderResources(0, 1, this->myTexture.GetAddressOf());
-	this->deviceContext->PSSetShaderResources(1, 1, this->myTexture1.GetAddressOf());
-	this->deviceContext->PSSetShaderResources(2, 1, this->myVideoTexture.GetAddressOf());
+//	this->deviceContext->PSSetShaderResources(0, 1, this->myTexture.GetAddressOf());
+//	this->deviceContext->PSSetShaderResources(1, 1, this->myTexture1.GetAddressOf());
+//	this->deviceContext->PSSetShaderResources(2, 1, this->myVideoTexture.GetAddressOf());
+	for (int i = 0, size = dyn_textures.size(); i < size; ++i) {
+		this->deviceContext->PSSetShaderResources(dyn_textures[i]->RegisterId(), 1, dx_dyn_textures[i].TextureResource.GetAddressOf());
+	}
+	for (int i = 0, size = stat_textures.size(); i < size; ++i) {
+		this->deviceContext->PSSetShaderResources(stat_textures[i]->RegisterId(), 1, dx_stat_textures[i].GetAddressOf());
+	}
 	this->deviceContext->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), vertexBuffer.StridePtr(), &offset);
 	this->deviceContext->IASetIndexBuffer(indicesBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 	this->deviceContext->DrawIndexed(indicesBuffer.BufferSize(), 0, 0);
@@ -118,8 +143,6 @@ void Graphics::RenderFrame()
 
 	this->swapchain->Present(1, NULL);
 }
-
-
 
 bool Graphics::InitializeDirectX(HWND hwnd, int wnd_width, int wnd_height)
 {
@@ -262,8 +285,8 @@ bool Graphics::InitializeDirectX(HWND hwnd, int wnd_width, int wnd_height)
 		return false;
 	}
 
-	spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->deviceContext.Get());
-	spriteFont = std::make_unique<DirectX::SpriteFont>(this->device.Get(), L"Data\\Fonts\\comic_sans_ms_16.spritefont");
+//	spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->deviceContext.Get());
+//	spriteFont = std::make_unique<DirectX::SpriteFont>(this->device.Get(), L"Data\\Fonts\\comic_sans_ms_16.spritefont");
 
 	//Create sampler description for sampler state
 	D3D11_SAMPLER_DESC sampDesc;
@@ -325,6 +348,23 @@ bool Graphics::InitializeShaders(const std::wstring &shader_name)
 	return true;
 }
 
+DXGI_FORMAT TextureType2DX(DynTextureType t) {
+	switch (t)
+	{
+	case DT_U8RGBA:
+		return DXGI_FORMAT_R8G8B8A8_UNORM;
+		break;
+	case DT_U16R:
+		return DXGI_FORMAT_R16_UNORM;
+		break;
+	default:
+		// NO!
+		break;
+	}
+
+	return DXGI_FORMAT_R8G8B8A8_UNORM;
+}
+
 bool Graphics::InitializeScene()
 {
 	//Textured Square
@@ -358,45 +398,87 @@ bool Graphics::InitializeScene()
 		return hr;
 	}
 
-	//Load Texture
-	D3D11_TEXTURE2D_DESC tdesc;
-	tdesc.Width = 512;
-	tdesc.Height = 1;
-	tdesc.MipLevels = tdesc.ArraySize = 1;
-	tdesc.Format = DXGI_FORMAT_R16_UNORM;
-	tdesc.SampleDesc.Count = 1;
-	tdesc.SampleDesc.Quality = 0;
-	tdesc.Usage = D3D11_USAGE_DYNAMIC;
-	tdesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	tdesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	tdesc.MiscFlags = 0;
+//	//Load Texture
+//	D3D11_TEXTURE2D_DESC tdesc;
+//	tdesc.Width = 512;
+//	tdesc.Height = 1;
+//	tdesc.MipLevels = tdesc.ArraySize = 1;
+//	tdesc.Format = DXGI_FORMAT_R16_UNORM;
+//	tdesc.SampleDesc.Count = 1;
+//	tdesc.SampleDesc.Quality = 0;
+//	tdesc.Usage = D3D11_USAGE_DYNAMIC;
+//	tdesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+//	tdesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+//	tdesc.MiscFlags = 0;
+//
+////	pTexture = NULL;
+//    hr = device->CreateTexture2D(&tdesc, NULL, &pTexture);
+//
+//	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+//	// Setup the shader resource view description.
+//	srvDesc.Format = tdesc.Format;
+//	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+//	srvDesc.Texture2D.MostDetailedMip = 0;
+//	srvDesc.Texture2D.MipLevels = -1;
+//
+//	// Create the shader resource view for the texture.
+//	hr = device->CreateShaderResourceView(pTexture.Get(), &srvDesc, &myTexture);
+//	if(FAILED(hr))
+//	{
+//		return false;
+//	}
 
-//	pTexture = NULL;
-    hr = device->CreateTexture2D(&tdesc, NULL, &pTexture);
+	for(IStaticTexture *dt : stat_textures) {
+		dx_stat_textures.emplace_back();
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> &dx_t = dx_stat_textures.back();
 
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	// Setup the shader resource view description.
-	srvDesc.Format = tdesc.Format;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.Texture2D.MipLevels = -1;
-
-	// Create the shader resource view for the texture.
-	hr = device->CreateShaderResourceView(pTexture.Get(), &srvDesc, &myTexture);
-	if(FAILED(hr))
-	{
-		return false;
+		hr = DirectX::CreateWICTextureFromFile(this->device.Get(), dt->Path().c_str(), nullptr, dx_t.GetAddressOf());
+		if (FAILED(hr)) {
+			Log(hr, "Failed to create wic texture from file.");
+			return false;
+		}
 	}
 
-	hr = DirectX::CreateWICTextureFromFile(this->device.Get(), L"Data\\Textures\\piano.png", nullptr, myTexture1.GetAddressOf());
-	if (FAILED(hr))
-	{
-		Log(hr, "Failed to create wic texture from file.");
-		return false;
+	for(IDynamicTexture *dt : dyn_textures) {
+		dx_dyn_textures.emplace_back();
+		DXDynTexture &dx_t = dx_dyn_textures.back();
+
+		D3D11_TEXTURE2D_DESC desc_rgba;
+		desc_rgba.Width              = dt->Width(); // 352
+		desc_rgba.Height             = dt->Height(); // 288
+		desc_rgba.MipLevels          = 1;
+		desc_rgba.ArraySize          = 1;
+		desc_rgba.Format             = TextureType2DX(dt->Type());
+		desc_rgba.SampleDesc.Count   = 1;
+		desc_rgba.SampleDesc.Quality = 0;
+		desc_rgba.BindFlags          = D3D11_BIND_SHADER_RESOURCE;
+		desc_rgba.Usage              = D3D11_USAGE_DYNAMIC;
+		desc_rgba.CPUAccessFlags     = D3D11_CPU_ACCESS_WRITE;
+		desc_rgba.MiscFlags          = 0;
+
+		hr = device->CreateTexture2D(&desc_rgba, 0, &dx_t.Texture);
+		if(FAILED(hr))
+		{
+			return false;
+		}
+
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+		// Setup the shader resource view description.
+		srvDesc.Format = desc_rgba.Format;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MostDetailedMip = 0;
+		srvDesc.Texture2D.MipLevels = -1;
+
+		// Create the shader resource view for the texture.
+		hr = device->CreateShaderResourceView(dx_t.Texture.Get(), &srvDesc, &dx_t.TextureResource);
+		if(FAILED(hr))
+		{
+			return false;
+		}
 	}
 
 	// Video texture
-	{
+/*	{
 		D3D11_TEXTURE2D_DESC desc_rgba;
 		desc_rgba.Width              = 352;
 		desc_rgba.Height             = 288;
@@ -429,22 +511,25 @@ bool Graphics::InitializeScene()
 		{
 			return false;
 		}
-	}
+	}*/
 
-	//Initialize Constant Buffer(s)
-	D3D11_BUFFER_DESC desc;
-	desc.Usage = D3D11_USAGE_DYNAMIC;
-	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	desc.MiscFlags = 0;
-	desc.ByteWidth = static_cast<UINT>(sizeof(CB_VS_vertexshader) + (16 - (sizeof(CB_VS_vertexshader) % 16)));
-	desc.StructureByteStride = 0;
+	if (shader_data) {
+		//Initialize Constant Buffer(s)
+		D3D11_BUFFER_DESC desc;
+		desc.Usage = D3D11_USAGE_DYNAMIC;
+		desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		desc.MiscFlags = 0;
+		int sz = shader_data->Size();
+		desc.ByteWidth = static_cast<UINT>(sz + (16 - (sz % 16)));
+		desc.StructureByteStride = 0;
 
-	hr = device->CreateBuffer(&desc, 0, constantBuffer.GetAddressOf());
-	if (FAILED(hr))
-	{
-		Log(hr, "Failed to initialize constant buffer.");
-		return false;
+		hr = device->CreateBuffer(&desc, 0, constantBuffer.GetAddressOf());
+		if (FAILED(hr))
+		{
+			Log(hr, "Failed to initialize constant buffer.");
+			return false;
+		}
 	}
 
 	return true;

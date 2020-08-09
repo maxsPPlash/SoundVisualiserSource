@@ -9,6 +9,7 @@
 #include "SoundAnalyser.h"
 #include "SoundStreamFile.h"
 #include "IVideoStream.h"
+#include "ShaderConstBuffer.h"
 
 //class Recorder;
 //class WAVSound;
@@ -23,7 +24,7 @@ public:
 	Engine();
 	virtual ~Engine();
 
-	bool Initialize(HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height, IRecorder *recorder, const std::wstring &shader_name);
+	bool Initialize(HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height, IRecorder *recorder, const std::wstring &shader_name, ShaderConstBuffer *cbuf, const std::vector<IDynamicTexture*> &dyn_texs, const std::vector<IStaticTexture*> &stat_texs);
 	bool ProcessMessages();
 	virtual void Update();
 	void RenderFrame();
