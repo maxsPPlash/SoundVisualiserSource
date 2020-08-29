@@ -3,6 +3,7 @@
 enum DynTextureType {
 	DT_U8RGBA = 0,
 	DT_U16R,
+	DT_U8R,
 };
 
 class IDynamicTexture {
@@ -23,6 +24,8 @@ public:
 			break;
 		case DT_U16R:
 			return sizeof(unsigned short);
+		case DT_U8R:
+			return sizeof(unsigned char);
 		}
 	}
 };

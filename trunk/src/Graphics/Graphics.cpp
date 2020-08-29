@@ -53,11 +53,6 @@ void Graphics::RenderFrame()
 	this->deviceContext->VSSetShader(vertexshader.GetShader(), NULL, 0);
 	this->deviceContext->PSSetShader(pixelshader.GetShader(), NULL, 0);
 
-//	D3D11_MAPPED_SUBRESOURCE mappedtResource;
-//	hr = this->deviceContext->Map(pTexture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedtResource);
-//	CopyMemory(mappedtResource.pData, texture_data, sizeof(unsigned short) * 512);
-//	this->deviceContext->Unmap(pTexture.Get(), 0);
-
 	if (shader_data) {
 		D3D11_MAPPED_SUBRESOURCE mappedResource;
 		hr = this->deviceContext->Map(constantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -81,26 +76,9 @@ void Graphics::RenderFrame()
 
 		this->deviceContext->Unmap(dx_t.Texture.Get(), 0);
 	}
-//	//Video texture
-//	{
-//		D3D11_MAPPED_SUBRESOURCE mappedTex;
-//		hr = this->deviceContext->Map(pVideoTexture.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedTex);
-//		if (FAILED(hr))
-//		{
-//			throw std::runtime_error("surface mapping failed!");
-//		}
-//
-//		video->CopyFrame(mappedTex.pData, mappedTex.RowPitch);
-//
-//		this->deviceContext->Unmap(pVideoTexture.Get(), 0);
-//	}
-
 
 	//Square
 	UINT offset = 0;
-//	this->deviceContext->PSSetShaderResources(0, 1, this->myTexture.GetAddressOf());
-//	this->deviceContext->PSSetShaderResources(1, 1, this->myTexture1.GetAddressOf());
-//	this->deviceContext->PSSetShaderResources(2, 1, this->myVideoTexture.GetAddressOf());
 	for (int i = 0, size = dyn_textures.size(); i < size; ++i) {
 		this->deviceContext->PSSetShaderResources(dyn_textures[i]->RegisterId(), 1, dx_dyn_textures[i].TextureResource.GetAddressOf());
 	}
@@ -357,6 +335,9 @@ DXGI_FORMAT TextureType2DX(DynTextureType t) {
 	case DT_U16R:
 		return DXGI_FORMAT_R16_UNORM;
 		break;
+	case DT_U8R:
+		return DXGI_FORMAT_R8_UNORM;
+		break;
 	default:
 		// NO!
 		break;
@@ -397,36 +378,6 @@ bool Graphics::InitializeScene()
 		Log(hr, "Failed to create indices buffer.");
 		return hr;
 	}
-
-//	//Load Texture
-//	D3D11_TEXTURE2D_DESC tdesc;
-//	tdesc.Width = 512;
-//	tdesc.Height = 1;
-//	tdesc.MipLevels = tdesc.ArraySize = 1;
-//	tdesc.Format = DXGI_FORMAT_R16_UNORM;
-//	tdesc.SampleDesc.Count = 1;
-//	tdesc.SampleDesc.Quality = 0;
-//	tdesc.Usage = D3D11_USAGE_DYNAMIC;
-//	tdesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-//	tdesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-//	tdesc.MiscFlags = 0;
-//
-////	pTexture = NULL;
-//    hr = device->CreateTexture2D(&tdesc, NULL, &pTexture);
-//
-//	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-//	// Setup the shader resource view description.
-//	srvDesc.Format = tdesc.Format;
-//	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-//	srvDesc.Texture2D.MostDetailedMip = 0;
-//	srvDesc.Texture2D.MipLevels = -1;
-//
-//	// Create the shader resource view for the texture.
-//	hr = device->CreateShaderResourceView(pTexture.Get(), &srvDesc, &myTexture);
-//	if(FAILED(hr))
-//	{
-//		return false;
-//	}
 
 	for(IStaticTexture *dt : stat_textures) {
 		dx_stat_textures.emplace_back();
@@ -476,42 +427,6 @@ bool Graphics::InitializeScene()
 			return false;
 		}
 	}
-
-	// Video texture
-/*	{
-		D3D11_TEXTURE2D_DESC desc_rgba;
-		desc_rgba.Width              = 352;
-		desc_rgba.Height             = 288;
-		desc_rgba.MipLevels          = 1;
-		desc_rgba.ArraySize          = 1;
-		desc_rgba.Format             = DXGI_FORMAT_R8G8B8A8_UNORM;
-		desc_rgba.SampleDesc.Count   = 1;
-		desc_rgba.SampleDesc.Quality = 0;
-		desc_rgba.BindFlags          = D3D11_BIND_SHADER_RESOURCE;
-		desc_rgba.Usage              = D3D11_USAGE_DYNAMIC;
-		desc_rgba.CPUAccessFlags     = D3D11_CPU_ACCESS_WRITE;
-		desc_rgba.MiscFlags          = 0;
-
-		hr = device->CreateTexture2D(&desc_rgba, 0, &pVideoTexture);
-		if(FAILED(hr))
-		{
-			return false;
-		}
-
-		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-		// Setup the shader resource view description.
-		srvDesc.Format = desc_rgba.Format;
-		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		srvDesc.Texture2D.MostDetailedMip = 0;
-		srvDesc.Texture2D.MipLevels = -1;
-
-		// Create the shader resource view for the texture.
-		hr = device->CreateShaderResourceView(pVideoTexture.Get(), &srvDesc, &myVideoTexture);
-		if(FAILED(hr))
-		{
-			return false;
-		}
-	}*/
 
 	if (shader_data) {
 		//Initialize Constant Buffer(s)

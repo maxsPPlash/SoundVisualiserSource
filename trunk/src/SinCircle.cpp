@@ -1,4 +1,4 @@
-#include "TileVis.h"
+#include "SinCircle.h"
 
 static const char *frame_save_path = "imgs\\img_";
 //const char *file_path = "./test_shader.wav";
@@ -8,23 +8,23 @@ static const char *file_path = "./Summer.wav";
 
 constexpr int sound_step = 2048;
 
-TileVis::TileVis() {
+SinCircle::SinCircle() {
 	recorder = 0;
 	snd = 0;
 	snd_stream = 0;
 }
 
-TileVis::~TileVis() {
+SinCircle::~SinCircle() {
 	delete snd;
 	delete snd_stream;
 }
 
-bool TileVis::Initialize(HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height) {
+bool SinCircle::Initialize(HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height) {
 	//	recorder = new Recorder(frame_save_path, width, height);
-	snd = new WAVSoundFile(file_path);
-	snd_stream = new SoundStreamFile(snd, sound_step);
+//	snd = new WAVSoundFile(file_path);
+//	snd_stream = new SoundStreamFile(snd, sound_step);
 
-	player.Play(snd);
+//	player.Play(snd);
 	prev_time = start_time = std::chrono::steady_clock::now();
 
 	scb.Data(&cbuffer);
@@ -36,7 +36,7 @@ bool TileVis::Initialize(HINSTANCE hInstance, std::string window_title, std::str
 	std::vector<IDynamicTexture*> dyn_textures;
 	std::vector<IStaticTexture*> stat_textures;
 
-	return Engine::Initialize(hInstance, window_title, window_class, width, height, recorder, L"tile", &scb, dyn_textures, stat_textures);
+	return Engine::Initialize(hInstance, window_title, window_class, width, height, recorder, L"sin_circle", &scb, dyn_textures, stat_textures);
 }
 
 template <typename T, int size, int window_h_size>
@@ -60,12 +60,12 @@ void smooth_array(T *data) {
 	}
 }
 
-void TileVis::Update() {
-	bool snd_updated = snd_stream->Update(time);
+void SinCircle::Update() {
+//	bool snd_updated = snd_stream->Update(time);
 
 	const int bass_samples_cnt = 32;
 
-	if (snd_stream->Finished()) return;
+//	if (snd_stream->Finished()) return;
 
 	// FOR CAPTURE
 	//	float dt = 1.f/30.f;
@@ -81,28 +81,10 @@ void TileVis::Update() {
 	cbuffer.time = time;
 	prev_time = cur_time;
 
-	float fft_res[fft_res_size];
-	if (snd_updated) {
-		analyser.CalcFFT_log(snd_stream->CurData(), sound_step, snd_stream->File()->Channels(), fft_res, fft_res_size);
-
-		{
-			cbuffer.bass_coef = 0;
-			float tent_len_max = 0.f;
-			for (int i = 0; i < fft_res_size; ++i) {
-				float new_data = fft_res[i];
-
-				if (i < bass_samples_cnt)
-					cbuffer.bass_coef += new_data;
-			}
-			cbuffer.bass_coef /= bass_samples_cnt;
-		}
-//		inited = false;
-	} else {
-		for (int i = 0; i < fft_res_size; ++i) {
-			fft_res[i] = 0;
-		}
-	}
-	
+//	if (snd_updated) {
+//		float fft_res[fft_res_size];
+//		analyser.CalcFFT_log(snd_stream->CurData(), sound_step, snd_stream->File()->Channels(), fft_res, fft_res_size);
+//	}
 
 	Engine::Update();
 }

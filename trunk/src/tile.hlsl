@@ -34,7 +34,7 @@ float2 dBoxR(float3 p, float3 hsize) {
 
 	float smooth_size = 0.1;
 
-	return float2(length(max(abs(p) - hsize + smooth_size, 0.f)) - smooth_size, (-5*id.x)-id.y);
+	return float2(length(max(abs(p) - hsize + smooth_size, 0.f)) - smooth_size, (-22*id.x)-id.y);
 }
 
 float smin( float a, float b, float k )
@@ -133,7 +133,7 @@ float4 main(PS_INPUT input) : SV_TARGET
 
 		if (d.y > -0.5) {
 			// moving light
-			float3 lightPos = float3(0, 5, 6);
+			float3 lightPos = float3(0, 30, 6);
 			lightPos.xz += float2(sin(time/3), cos(time/3)) * 10.;
 			float3 lig = normalize(lightPos - p);
 			float3 normal = GetNormal(p);
@@ -156,8 +156,14 @@ float4 main(PS_INPUT input) : SV_TARGET
 			// material
 			if (d.y < 0.5)
 				col = float3(0.6, 0.6, 0.6);
-			else
-				col = (0.5+sin( d.y* 30 * float3(19343.1231,77310.4230,34377.247650) ) * 0.5);
+			else {
+//				if ((sin(d.y * 43758.5453123) + 1) / 2 > 1 - bass_coef) {
+//					col = 0.;
+//				} else 
+				{
+					col = (0.5+sin( d.y* 30 * float3(493.1231,770.4230,377.247650) ) * 0.5);
+				}
+			}
 
 			// shadow
 	//		float ds = RayMarch(p+normal*SURF_DIST*2.f, lig);
@@ -166,7 +172,7 @@ float4 main(PS_INPUT input) : SV_TARGET
 
 			// lightning
 			float3 lin = 0.;
-			lin += 3 * main_light * float3(0.8, 0.8, 0.8) * shadow_coef;
+//			lin += 3 * main_light * float3(0.8, 0.8, 0.8) * shadow_coef;
 			lin += sky_light * sky_col * 0.2;
 			lin += 80*spe*float3(1.30,1.00,0.70);
 

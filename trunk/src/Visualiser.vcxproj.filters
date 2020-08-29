@@ -11,9 +11,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Processor">
-      <UniqueIdentifier>{b2942aa9-b271-4233-82f3-4369e1867b9a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Graphics">
       <UniqueIdentifier>{6fe4511e-770f-4ef5-9a41-594d8023775f}</UniqueIdentifier>
     </Filter>
@@ -46,6 +43,21 @@
     </Filter>
     <Filter Include="Visual\Tile">
       <UniqueIdentifier>{18dc2307-c958-4aa7-bb4e-0a11a05d9580}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Visual\SinCircle">
+      <UniqueIdentifier>{ce36f098-2788-4c1f-abec-71061dcd1452}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Visual\SimpleSound">
+      <UniqueIdentifier>{95f5052a-6db3-4dd1-9213-41b66364a355}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Visual\Composite">
+      <UniqueIdentifier>{140428e9-ee9d-42b4-95fd-e5a7d988fe31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Visual\Projector">
+      <UniqueIdentifier>{923da8f7-7c71-46fd-a0e1-485c71a23972}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Processor">
+      <UniqueIdentifier>{b2942aa9-b271-4233-82f3-4369e1867b9a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -133,6 +145,18 @@
     <ClInclude Include="TileVis.h">
       <Filter>Visual\Tile</Filter>
     </ClInclude>
+    <ClInclude Include="SinCircle.h">
+      <Filter>Visual\SinCircle</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleSound.h">
+      <Filter>Visual\SimpleSound</Filter>
+    </ClInclude>
+    <ClInclude Include="Composite.h">
+      <Filter>Visual\Composite</Filter>
+    </ClInclude>
+    <ClInclude Include="Projector.h">
+      <Filter>Visual\Projector</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WAVSoundFile.cpp">
@@ -186,6 +210,18 @@
     <ClCompile Include="TileVis.cpp">
       <Filter>Visual\Tile</Filter>
     </ClCompile>
+    <ClCompile Include="SinCircle.cpp">
+      <Filter>Visual\SinCircle</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleSound.cpp">
+      <Filter>Visual\SimpleSound</Filter>
+    </ClCompile>
+    <ClCompile Include="Composite.cpp">
+      <Filter>Visual\Composite</Filter>
+    </ClCompile>
+    <ClCompile Include="Projector.cpp">
+      <Filter>Visual\Projector</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="vertexshader.hlsl">
@@ -208,6 +244,18 @@
     </FxCompile>
     <FxCompile Include="tile.hlsl">
       <Filter>Visual\Tile</Filter>
+    </FxCompile>
+    <FxCompile Include="sin_circle.hlsl">
+      <Filter>Visual\SinCircle</Filter>
+    </FxCompile>
+    <FxCompile Include="simple_sound.hlsl">
+      <Filter>Visual\SimpleSound</Filter>
+    </FxCompile>
+    <FxCompile Include="composite.hlsl">
+      <Filter>Visual\Composite</Filter>
+    </FxCompile>
+    <FxCompile Include="projector.hlsl">
+      <Filter>Visual\Projector</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

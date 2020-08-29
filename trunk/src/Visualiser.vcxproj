@@ -128,6 +128,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Composite.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Graphics\AdapterReader.h" />
     <ClInclude Include="Graphics\Graphics.h" />
@@ -140,11 +141,14 @@
     <ClInclude Include="IStaticTexture.h" />
     <ClInclude Include="IVideoStream.h" />
     <ClInclude Include="OpenCVVideoStream.h" />
+    <ClInclude Include="Projector.h" />
     <ClInclude Include="RaymarchingVis.h" />
     <ClInclude Include="ShaderConstBuffer.h" />
     <ClInclude Include="ShaderDynTexture.h" />
     <ClInclude Include="ShaderStaticTexture.h" />
     <ClInclude Include="ShaderVideoTexture.h" />
+    <ClInclude Include="SimpleSound.h" />
+    <ClInclude Include="SinCircle.h" />
     <ClInclude Include="SoundPlayer.h" />
     <ClInclude Include="SoundStreamFile.h" />
     <ClInclude Include="TentacleVis.h" />
@@ -158,16 +162,20 @@
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Composite.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Graphics\AdapterReader.cpp" />
     <ClCompile Include="Graphics\Graphics.cpp" />
     <ClCompile Include="Graphics\Shaders.cpp" />
     <ClCompile Include="OpenCVVideoStream.cpp" />
+    <ClCompile Include="Projector.cpp" />
     <ClCompile Include="RaymarchingVis.cpp" />
     <ClCompile Include="Recorder.cpp" />
     <ClCompile Include="RenderWindow.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ShaderDynTexture.cpp" />
+    <ClCompile Include="SimpleSound.cpp" />
+    <ClCompile Include="SinCircle.cpp" />
     <ClCompile Include="SoundPlayer.cpp" />
     <ClCompile Include="SoundStreamFile.cpp" />
     <ClCompile Include="TentacleVis.cpp" />
@@ -177,7 +185,23 @@
     <ClCompile Include="SoundAnalyser.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="composite.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="projector.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="raymarching.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="simple_sound.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="sin_circle.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>

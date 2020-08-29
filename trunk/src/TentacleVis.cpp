@@ -3,7 +3,8 @@
 static const char *frame_save_path = "imgs\\img_";
 //const char *file_path = "./test_shader.wav";
 //const char *file_path = "./Summer.wav";
-static const char *file_path = "./GoFuckYourself.wav";
+//static const char *file_path = "./GoFuckYourself.wav";
+static const char *file_path = "./techno_test.wav";
 //const char *file_path = "./BrianJames.wav";
 
 constexpr int sound_step = 2048;
@@ -92,7 +93,7 @@ void TentacleVis::UpdateFreqs()
 {
 	bool snd_updated = snd_stream->Update(time);
 
-	const int bass_samples_cnt = 32;
+	const int bass_samples_cnt = 8;
 
 	if (snd_stream->Finished()) return;
 
@@ -177,7 +178,7 @@ void TentacleVis::UpdateFreqs()
 void TentacleVis::UpdateBass() {
 	bool snd_updated = snd_stream->Update(time) && !snd_stream->Finished();
 
-	const int bass_samples_cnt = 32;
+	const int bass_samples_cnt = 8;
 
 //	if (snd_stream->Finished()) return;
 
@@ -204,9 +205,9 @@ void TentacleVis::UpdateBass() {
 		analyser.CalcFFT_log(snd_stream->CurData(), sound_step, snd_stream->File()->Channels(), fft_res, fft_res_size);
 		inited = false;
 	} else {
-		for (int i = 0; i < fft_res_size; ++i) {
-			fft_res[i] = 0;
-		}
+//		for (int i = 0; i < fft_res_size; ++i) {
+//			fft_res[i] = 0;
+//		}
 	}
 	{
 		cbuffer.bass_coef = 0;
@@ -221,7 +222,7 @@ void TentacleVis::UpdateBass() {
 			if (i < bass_samples_cnt)
 				cbuffer.bass_coef += new_data;
 		}
-		cbuffer.bass_coef /= bass_samples_cnt;
+		cbuffer.bass_coef /= bass_samples_cnt*1.5;
 
 		tent_len += (0.05+smoothstep(0.4f, 0.9f, cbuffer.bass_coef)) * dt * 2;
 		cbuffer.tent_len = tent_len;

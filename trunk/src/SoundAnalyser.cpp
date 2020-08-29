@@ -28,7 +28,8 @@ bool SoundAnalyser::CalcFFT_log(float *input, int input_sz, int input_stride, fl
 	out = (fftwf_complex *)fftwf_malloc(sizeof(fftwf_complex) * input_sz);
 	for (int i = 0; i < input_sz; i++) {
 		// Hann function
-		float multiplier =1.f;// 0.5 * (1 - cos(2*M_PI*i/2047));
+//		float multiplier =1.f;// 0.5 * (1 - cos(2*M_PI*i/2047));
+		float multiplier = 0.54 - 0.46 * cos(2*M_PI*i/2047);
 		int id = i * input_stride;
 		in[i][0] = multiplier*input[id];
 		in[i][1] = 0;
@@ -39,8 +40,8 @@ bool SoundAnalyser::CalcFFT_log(float *input, int input_sz, int input_stride, fl
 
 	for (int i = 0; i < output_sz; ++i) {
 		float r1 = (sqrt(pow(out[i][0],2) + pow(out[i][1],2)));
-//		output[i] = r1 * 0.002f;
-		output[i] = (log10(10.f + r1*100.f) - 1.f) / 3.f;
+		output[i] = r1 * 0.02f;
+//		output[i] = (log10(10.f + r1*100.f) - 1.f) / 3.f;
 	}
 
 	fftwf_free(in); fftwf_free(out);
