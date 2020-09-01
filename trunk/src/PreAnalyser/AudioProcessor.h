@@ -4,6 +4,7 @@
 struct ViewData {
 	std::vector<std::vector<float>> data;
 	float max_val;
+	float xmul;
 };
 
 class AudioProcessor {
@@ -17,4 +18,5 @@ public:
 private:
 	ViewData FFT;
 	ViewData sum_data;
+	int sample_rate;
 };

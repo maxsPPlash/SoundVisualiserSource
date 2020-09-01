@@ -21,6 +21,7 @@ AudioProcessor::AudioProcessor() {
 	int cur_pointer = 0;
 	const int sample_count = snd.SampleCount();
 	const int chans = snd.Channels();
+	sample_rate = snd.SampleRate();
 
 	float max_val = 0;
 
@@ -39,6 +40,7 @@ AudioProcessor::AudioProcessor() {
 	}
 
 	FFT.max_val = max_val;
+	FFT.xmul = 1;
 }
 
 void AudioProcessor::UpdateSum(int window/* = -1*/) {
@@ -62,4 +64,5 @@ void AudioProcessor::UpdateSum(int window/* = -1*/) {
 	}
 
 	sum_data.max_val = max_val;
+	sum_data.xmul = float(sound_step) / float(sample_rate);
 }

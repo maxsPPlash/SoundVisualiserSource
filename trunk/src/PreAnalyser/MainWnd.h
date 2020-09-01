@@ -20,6 +20,7 @@ private:
 	StackPanel ^selectViewPanel;
 	RadioButton ^rbtnFFT;
 	RadioButton ^rbtnSum;
+	Label ^labelInfo;
 
 protected:
 	void InitializeComponent() {
@@ -29,6 +30,7 @@ protected:
 		selectViewPanel = gcnew StackPanel();
 		rbtnFFT = gcnew RadioButton();
 		rbtnSum = gcnew RadioButton();
+		labelInfo = gcnew Label();
 
 		canGraph->Width = 800;
 		canGraph->Height = 600;
@@ -50,11 +52,14 @@ protected:
 		rbtnSum->IsChecked = false;
 		rbtnSum->Content = "Sum";
 
+		labelInfo->Content = "empty";
+
 		selectViewPanel->HorizontalAlignment = System::Windows::HorizontalAlignment::Right;
 		selectViewPanel->VerticalAlignment = System::Windows::VerticalAlignment::Top;
-		selectViewPanel->Width = 100;
+		selectViewPanel->Width = 300;
 		selectViewPanel->Children->Add(this->rbtnFFT);
 		selectViewPanel->Children->Add(this->rbtnSum);
+		selectViewPanel->Children->Add(this->labelInfo);
 
 		mainPanel->HorizontalAlignment = System::Windows::HorizontalAlignment::Stretch;
 		mainPanel->VerticalAlignment = System::Windows::VerticalAlignment::Stretch;
@@ -73,6 +78,7 @@ private:
 	System::Windows::Shapes::Polyline ^moving;
 
 	void SetupGraph();
+	void UpdateInfo(Point p);
 
 public:
 	MainWnd();

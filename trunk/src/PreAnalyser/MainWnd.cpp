@@ -77,7 +77,6 @@ void MainWnd::SetupGraph() {
 
 	canGraph->Children->Add(yaxis_path);
 
-	Brush ^brush = Brushes::Red;
 	ViewData &data = ap->getDataSum();
 	float id = 0;
 	PointCollection ^points = gcnew PointCollection();
@@ -91,12 +90,32 @@ void MainWnd::SetupGraph() {
 
 	Polyline ^polyline = gcnew Polyline();
 	polyline->StrokeThickness = 1;
-	polyline->Stroke = brush;
+	polyline->Stroke = Brushes::Red;
 	polyline->Points = points;
 
 	canGraph->Children->Add(polyline);
 
 	canGraph->Children->Add(moving);
+}
+
+void MainWnd::UpdateInfo(Point p) {
+	const double margin = 10;
+	double xmin = margin;
+	double xmax = canGraph->Width - margin;
+	double xsz = xmax - xmin;
+	double ymin = margin;
+	double ymax = canGraph->Height - margin;
+	double ysz = ymax - ymin;
+	const double step = 10;
+
+	ViewData &data = ap->getDataSum();
+	int dataxlen = data.data[dataScroll->Track->Value].size();
+	int dataylen = data.max_val;
+
+	double r_x = ((p.X - xmin) / xsz) * dataxlen * data.xmul;
+	double r_y = ((p.Y - ymin) / ysz) * dataylen;
+
+	labelInfo->Content = "X : " + r_x.ToString() + " Y : " + r_y.ToString();
 }
 
 void MainWnd::ButtonOnClick(System::Object^  sender, RoutedEventArgs^  e) {
@@ -116,4 +135,6 @@ void MainWnd::canGraph_MouseMove(System::Object^  sender, System::Windows::Input
 	points->Add(Point(p.X, 0));
 
 	moving->Points = points;
+
+	UpdateInfo(p);
 }
