@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{b21ab83f-569b-44a0-80d5-2fb2a8dfe1ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main">
+      <UniqueIdentifier>{19121097-98db-43e9-8a3d-64eb05f9db26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Window">
+      <UniqueIdentifier>{496f6fc8-7c4f-4746-8a0c-7e68b5119975}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Processor">
+      <UniqueIdentifier>{bb05e4ec-1a8b-4c3d-802e-3ef0b71f1eed}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\SoundAnalyser.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="MainWnd.cpp">
+      <Filter>Window</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioProcessor.cpp">
+      <Filter>Processor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\WAVSoundFile.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\SoundAnalyser.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="MainWnd.h">
+      <Filter>Window</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioProcessor.h">
+      <Filter>Processor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ISoundFile.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\WAVSoundFile.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
