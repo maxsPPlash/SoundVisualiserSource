@@ -59,6 +59,9 @@
     <Filter Include="Processor">
       <UniqueIdentifier>{b2942aa9-b271-4233-82f3-4369e1867b9a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Visual\RayEye">
+      <UniqueIdentifier>{3abfc533-6888-48f6-9650-a0c8e498f1bc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ISoundFile.h">
@@ -157,6 +160,9 @@
     <ClInclude Include="Projector.h">
       <Filter>Visual\Projector</Filter>
     </ClInclude>
+    <ClInclude Include="RayEye.h">
+      <Filter>Visual\RayEye</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WAVSoundFile.cpp">
@@ -222,6 +228,9 @@
     <ClCompile Include="Projector.cpp">
       <Filter>Visual\Projector</Filter>
     </ClCompile>
+    <ClCompile Include="RayEye.cpp">
+      <Filter>Visual\RayEye</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="vertexshader.hlsl">
@@ -256,6 +265,9 @@
     </FxCompile>
     <FxCompile Include="projector.hlsl">
       <Filter>Visual\Projector</Filter>
+    </FxCompile>
+    <FxCompile Include="rayeye.hlsl">
+      <Filter>Visual\RayEye</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
