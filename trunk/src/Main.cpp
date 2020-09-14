@@ -7,6 +7,7 @@
 #include "Composite.h"
 #include "Projector.h"
 #include "RayEye.h"
+#include "AlexanderPlatz.h"
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,

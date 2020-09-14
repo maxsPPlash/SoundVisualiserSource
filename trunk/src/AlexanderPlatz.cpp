@@ -1,4 +1,4 @@
-#include "SimpleSound.h"
+#include "AlexanderPlatz.h"
 
 static const char *frame_save_path = "imgs\\img_";
 //const char *file_path = "./test_shader.wav";
@@ -10,7 +10,7 @@ static const char *file_path = "./Alexander-Platz.wav";
 
 constexpr int sound_step = 2048;
 
-SimpleSound::SimpleSound() {
+AlexanderPlatz::AlexanderPlatz() {
 	recorder = 0;
 	snd = 0;
 	snd_stream = 0;
@@ -25,7 +25,7 @@ SimpleSound::SimpleSound() {
 	}
 }
 
-SimpleSound::~SimpleSound() {
+AlexanderPlatz::~AlexanderPlatz() {
 	delete snd;
 	delete snd_stream;
 
@@ -33,7 +33,7 @@ SimpleSound::~SimpleSound() {
 	delete image;
 }
 
-bool SimpleSound::Initialize(HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height) {
+bool AlexanderPlatz::Initialize(HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height) {
 	//	recorder = new Recorder(frame_save_path, width, height);
 	snd = new WAVSoundFile(file_path);
 	snd_stream = new SoundStreamFile(snd, sound_step);
@@ -53,7 +53,7 @@ bool SimpleSound::Initialize(HINSTANCE hInstance, std::string window_title, std:
 	cbuffer.width = width;
 	cbuffer.height = height;
 
-	return Engine::Initialize(hInstance, window_title, window_class, width, height, recorder, L"test_column", &scb, dyn_textures, stat_textures);
+	return Engine::Initialize(hInstance, window_title, window_class, width, height, recorder, L"alexander_platz", &scb, dyn_textures, stat_textures);
 }
 
 template <typename T, int size, int window_h_size>
@@ -77,7 +77,7 @@ void smooth_array(T *data) {
 	}
 }
 
-void SimpleSound::Update() {
+void AlexanderPlatz::Update() {
 	bool snd_updated = snd_stream->Update(time);
 
 	const int bass_samples_cnt = 32;
@@ -117,6 +117,15 @@ void SimpleSound::Update() {
 		}
 		CopyMemory(fft_prev, fft_res, fft_res_size*sizeof(float));
 		cbuffer.bass_coef /= bass_samples_cnt;
+
+		if (fft_res[15] > 1.09/* && fft_res[6] < 5.5*/)
+		{
+			float &sm = cbuffer.c1_time < cbuffer.c2_time ? cbuffer.c1_time : cbuffer.c2_time;
+			float &bg = cbuffer.c1_time < cbuffer.c2_time ? cbuffer.c2_time : cbuffer.c1_time;
+
+			if (time - bg > 1.4)
+				sm = time;
+		}
 
 		inited = true;
 	}

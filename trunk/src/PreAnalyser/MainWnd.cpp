@@ -110,10 +110,10 @@ void MainWnd::UpdateInfo(Point p) {
 
 	ViewData &data = ap->getDataSum();
 	int dataxlen = data.data[dataScroll->Track->Value].size();
-	int dataylen = data.max_val;
+	float dataylen = data.max_val;
 
 	double r_x = ((p.X - xmin) / xsz) * dataxlen * data.xmul;
-	double r_y = ((p.Y - ymin) / ysz) * dataylen;
+	double r_y = dataylen - ((p.Y - ymin) / ysz) * dataylen;
 
 	labelInfo->Content = "X : " + r_x.ToString() + " Y : " + r_y.ToString();
 }

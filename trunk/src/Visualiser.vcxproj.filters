@@ -62,6 +62,12 @@
     <Filter Include="Visual\RayEye">
       <UniqueIdentifier>{3abfc533-6888-48f6-9650-a0c8e498f1bc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Visual\SimpleSound\Tests">
+      <UniqueIdentifier>{7bffb97f-1c51-49f8-b761-784feebf0697}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Visual\AlexanderPlatz">
+      <UniqueIdentifier>{0aae6bd6-03df-43be-be9f-c16302d00d2c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ISoundFile.h">
@@ -163,6 +169,9 @@
     <ClInclude Include="RayEye.h">
       <Filter>Visual\RayEye</Filter>
     </ClInclude>
+    <ClInclude Include="AlexanderPlatz.h">
+      <Filter>Visual\AlexanderPlatz</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WAVSoundFile.cpp">
@@ -231,6 +240,9 @@
     <ClCompile Include="RayEye.cpp">
       <Filter>Visual\RayEye</Filter>
     </ClCompile>
+    <ClCompile Include="AlexanderPlatz.cpp">
+      <Filter>Visual\AlexanderPlatz</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="vertexshader.hlsl">
@@ -268,6 +280,12 @@
     </FxCompile>
     <FxCompile Include="rayeye.hlsl">
       <Filter>Visual\RayEye</Filter>
+    </FxCompile>
+    <FxCompile Include="test_column.hlsl">
+      <Filter>Visual\SimpleSound\Tests</Filter>
+    </FxCompile>
+    <FxCompile Include="alexander_platz.hlsl">
+      <Filter>Visual\AlexanderPlatz</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

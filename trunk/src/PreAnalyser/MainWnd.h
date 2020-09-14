@@ -32,7 +32,7 @@ protected:
 		rbtnSum = gcnew RadioButton();
 		labelInfo = gcnew Label();
 
-		canGraph->Width = 800;
+		canGraph->Width = 1000;
 		canGraph->Height = 600;
 		canGraph->VerticalAlignment = System::Windows::VerticalAlignment::Center;
 		canGraph->HorizontalAlignment = System::Windows::HorizontalAlignment::Center;
