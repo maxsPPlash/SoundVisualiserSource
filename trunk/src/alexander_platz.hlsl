@@ -5,9 +5,15 @@ cbuffer mycBuffer : register(b0)
 	float time;
 
 	float bass_coef;
+	float smooth_bass_coef;
 
 	float c1_time;
 	float c2_time;
+
+	float eye_time;
+	float eye_id;
+
+	float time_end;
 };
 
 struct PS_INPUT
@@ -16,8 +22,25 @@ struct PS_INPUT
 	float2 inTexCoord : TEXCOORD;
 };
 
-Texture2D objTexture : TEXTURE : register(t0);
+Texture2D papertex : TEXTURE : register(t1);
 SamplerState objSamplerState : SAMPLER : register(s0);
+
+float rand(float n)
+{
+	return frac(sin(n)*43758.5453);
+}
+
+float rand2d(float2 v)
+{
+	float2 K1 = float2(23.14069263277926,2.665144142690225);
+	return frac( cos( dot(v,K1) ) * 12345.6789 );
+}
+
+float rand3d(float3 v)
+{
+	float2 K1 = float3(23.14069263277926, 2.665144142690225, 7.5739974548463465);
+	return frac( cos( dot(v,K1) ) * 12345.6789 );
+}
 
 // make vert_segment
 float dSegment(float2 p, float2 a, float2 b)
@@ -110,7 +133,7 @@ void road(inout float3 col, float2 uv) {
 	if (loc_uv.x > 0.205 && loc_c_time < 0.5 * new_col_time)
 		loc_c_time += cmx_t - cmn_t;
 
-	float move = pow(loc_c_time, 3)/40. + 0.005;
+	float move = pow(loc_c_time, 3)/35. + 0.005;
 	float2 csize = float2(0.05, 0.3) * move * 4;
 	float2 shift = float2(0.07 + 1.27 * move, 1 * move - csize.y);
 
@@ -118,12 +141,23 @@ void road(inout float3 col, float2 uv) {
 //	col = lerp(float3(1.0, 0.0, 0.), col, smoothstep(0.001, 0.005, trd));
 
 	float cdepth_fade = clamp(csize*10, 0.0001, 1.);
-	float d = dColumn(loc_uv - shift, csize);// - bass_coef / 10000.;
+	float d = dColumn(loc_uv - shift, csize);// + bass_coef / 100000.;
 
 //	float d = dColumn(loc_uv, float2(0.05, 0.3));
 
-	coef = 1.-smoothstep(0.001, 0.004, d);
+	float bc = lerp(0.03, 0.0005 * smooth_bass_coef, clamp(time - 112., 0., 1.)) * cdepth_fade;
+
+	coef = 1.-smoothstep(0.004 + bc / 2, 0.005 + bc, d);
 	col = lerp(col, col_col, coef*cdepth_fade);
+
+	coef = 1.-smoothstep(0.002, 0.004, d);
+	col = lerp(col, 0., coef*cdepth_fade);
+
+//	float3 inner_col = float3(rand(time), rand(time+3.), rand(time+20.));
+//	inner_col = normalize(inner_col) / 3;
+
+//	coef = 1.-smoothstep(-0.001, 0.0035 * clamp(bass_coef / 1000., 0, 1.), d);
+//	col = lerp(col, inner_col, coef*cdepth_fade);
 }
 
 float dTrapezoid(float2 p, float r1, float r2, float he)
@@ -137,6 +171,177 @@ float dTrapezoid(float2 p, float r1, float r2, float he)
 	return s*sqrt( min(dot(ca, ca),dot(cb, cb)) );
 }
 
+float smin( float a, float b, float k )
+{
+	float h = max(k-abs(a-b),0.0);
+	return min(a, b) - h*h*0.25/k;
+}
+
+float smax( float a, float b, float k )
+{
+	float h = max(k-abs(a-b),0.0);
+	return max(a, b) + h*h*0.25/k;
+}
+
+float deye_cut(float3 p, float r, float shift, float blink, float z_bound)
+{
+	float lid_top = lerp(length(p.xy - float2(-0.0, -shift)) - r, +p.y - 0.002, blink);
+	float lid_bottom = lerp(length(p.xy - float2(+0.0, shift)) - r, -p.y - 0.002, blink); 
+	float cut_xy = smax(lid_top, lid_bottom, 0.01);
+
+	float z_len = 0.; p.z > -z_bound ? 0. : p.z + z_bound;
+
+	return cut_xy + z_len;
+}
+
+float sdSphere( float3 p, float s )
+{
+  return length(p)-s;
+}
+
+float dEye(float3 p, float3 lookat) {
+	const float inner_hill_shift = -0.78;
+	const float inner_hill_r = 0.25;
+
+	float3 look_dir = normalize(lookat);
+
+	float inner_hill = sdSphere(p - (look_dir*inner_hill_shift), inner_hill_r);
+	float eyeball = sdSphere(p, 1.);
+	eyeball = smin(eyeball, inner_hill, 0.01);
+	const float pupil_shift = inner_hill_shift - inner_hill_r;
+	const float pupil_r = 0.02;
+	float pupil = sdSphere(p - (look_dir * pupil_shift), pupil_r);
+	eyeball = smax(eyeball, -pupil, 0.0003);
+
+//	float distor = sin(20*p.x)*sin(30*p.y)*sin(10*p.z) * (1+sin(time*10)) / 40.;
+//	eyeball += distor;
+
+	float blink = smoothstep(0.995, 1, sin(time)); // temp
+
+	float shell_sphere = sdSphere(p, 1.02);// smin(, inner_hill - 0.01, 0.01);
+	shell_sphere = smin(shell_sphere, inner_hill - 0.02, 0.01);
+
+	float cut = deye_cut(p, 1., 0.85, blink*0.99, 1.1);
+	float eye_shell = smax(shell_sphere, -cut, 0.01);
+
+	float cut_t = deye_cut(p, 1.02, 0.85, 0., 1.1);
+
+	float eye = smin(eye_shell, eyeball, 0.01);
+	float curve = sin(shell_sphere)/2.0;
+	eye = smax(eye, cut_t+curve, 0.01);
+
+	float beck_cut = sdSphere(p - float3(0.0, 0, pupil_shift), 1.);
+	eye = smax(eye, beck_cut, 0.5);
+
+	return eye;
+}
+
+float GetDist(float3 p) {
+	float3 lookat = float3(0., 0., 1);
+	float shake_tm = round(time / 0.1);
+	lookat.xy += (float2(rand(shake_tm), rand(shake_tm+3.)) - 0.5) / 100;
+
+	float s1 = dEye(p-float3(0.0, 1.3, 0.6), lookat);
+
+	const float move_start = 1.;
+	const float move_time = 1.;
+	float dpos = time < move_start ? 0. : clamp((time - move_start) / move_time, 0., 1.);
+	float coef_merge = dpos * 2;
+
+	float s2 = dEye(p-float3(0.3-(1.*dpos), 1.3-(0.4*dpos), 0.6), lookat);
+
+	float res = s1; smin(s1, s2, 0.001+0.3*coef_merge);
+
+	return res;
+}
+
+float RayMarch(float3 ro, float3 rd) {
+	float res = -1.0;
+
+    float tmin = 0.5;
+    float tmax = 20.0;
+
+#if 1
+	// raytrace bounding plane
+	float tp = (3.5-ro.y)/rd.y;
+	if( tp>0.0 ) tmax = min( tmax, tp );
+#endif
+
+	// raymarch scene
+	float t = tmin;
+	for( int i=0; i<256 && t<tmax; i++ )
+	{
+		float h = GetDist(ro+rd*t);
+		if(abs(h.x)<(0.0005*t))
+		{
+			res = t;
+			break;
+		}
+		t += h;
+	}
+
+	return res;
+}
+
+float3 GetNormal(float3 p) {
+	float d = GetDist(p);
+	float2 e = float2(0.01, 0);
+
+	float3 n = d - float3(
+		GetDist(p - e.xyy).x,
+		GetDist(p - e.yxy).x,
+		GetDist(p - e.yyx).x);
+
+	return normalize(n);
+}
+
+void rm_eye(inout float3 col, float2 uv)
+{
+	uv.y *= -1.f;
+
+	float loc_t = time - eye_time;
+
+	const float fade_in = 0.1;
+	const float tm = fade_in + 1.0;
+	const float fade_out = tm + 0.5;
+	float fi_c = smoothstep(0., fade_in, loc_t);
+	float fo_c = smoothstep(fade_out, tm, loc_t);
+
+	float light_coef = fi_c * fo_c;
+//	float3 light_color = float3(1.0, 1.0, 1.0);
+	float3 light_color = float3(1.0, 0.0, 0.0);
+
+//	col = clamp((1.-length(uv-float2(0., -0.5)) - 0.2*rand2d(uv+time)) * light_coef, 0, 1) * light_color;
+
+	float3 ro = float3(-0.0f, 1.f, -2.0f);
+	float3 rd = normalize(float3(uv.x+0., uv.y, 1));
+
+	float d = RayMarch(ro, rd);
+
+	float3 p = ro + rd * d.x;
+
+	float l_col = float3(0.4, 0.4, 0.4);
+
+	if (d > -0.5) {
+		// moving light
+		float3 lightPos = float3(0.2, 1.45, -0.9);
+		float3 light_dir = lightPos - p;
+		float3 l = normalize(light_dir) /* (pow(dot(light_dir, light_dir), 1)) * 3*/;
+		float3 normal = GetNormal(p);
+
+		float3 sky_l_dir = float3(0, 1, 0);
+
+		// light coef
+		float main_light = clamp(dot(normal, l) - rand3d(p/*+time*/)*0.05, 0, 1) * 0.5;
+
+		// lightning
+		float3 lin = 0.;
+		lin += 3 * light_coef * main_light * light_color;
+
+		col = lerp(col, l_col, lin);
+	}
+}
+
 void plaz_tower(inout float3 col, float2 uv) {
 	float2 loc_uv = uv;
 	float size = 1;
@@ -148,13 +353,11 @@ void plaz_tower(inout float3 col, float2 uv) {
 	col = lerp(1.f, col, coef);
 }
 
-float bg(inout float3 col, float2 uv) {
+void bg(inout float3 col, float2 uv) {
 	float2 origin = uv - float2(0, 0.5);
 	float lsq = dot(origin, origin);
 
-	col = lerp(0.2, 0.01, lsq);
-
-	return col;
+	col = 0.1 * papertex.Sample(objSamplerState, (uv+float2(1., 0.5)) / 2 ).x;// lerp(0.2, 0.01, lsq);
 }
 
 float4 main(PS_INPUT input) : SV_TARGET
@@ -162,14 +365,19 @@ float4 main(PS_INPUT input) : SV_TARGET
 	float2 resolution = float2(wnd_w, wnd_h);
 	float2 uv = (input.inPosition.xy-.5*resolution) / resolution.y;
 
+	uv += (papertex.Sample(objSamplerState, input.inPosition.xy/resolution).xy-0.5) * 0.004;
+
 	float3 col = 0;
 
 	bg(col, uv);
+	rm_eye(col, uv);
 //	plaz_tower(col, uv);
 	road(col, uv);
 
 	if (time < 1)
 		col = lerp(0., col, time);
+	if (time > time_end - 1.5)
+		col = lerp(col, 0., time - time_end);
 
 	// Output to screen
 	return float4(col,1.0);

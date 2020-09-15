@@ -48,10 +48,13 @@ bool AlexanderPlatz::Initialize(HINSTANCE hInstance, std::string window_title, s
 	std::vector<IDynamicTexture*> dyn_textures;
 	dyn_textures.push_back(audo_data_tex);
 
+	image = new ShaderStaticTexture(L"dirt_test.jpg", 1);
 	std::vector<IStaticTexture*> stat_textures;
+	stat_textures.push_back(image);
 
 	cbuffer.width = width;
 	cbuffer.height = height;
+	cbuffer.time_end = snd->SampleCount() / snd->SampleRate();
 
 	return Engine::Initialize(hInstance, window_title, window_class, width, height, recorder, L"alexander_platz", &scb, dyn_textures, stat_textures);
 }
@@ -80,7 +83,7 @@ void smooth_array(T *data) {
 void AlexanderPlatz::Update() {
 	bool snd_updated = snd_stream->Update(time);
 
-	const int bass_samples_cnt = 32;
+	const int bass_samples_cnt = 4;
 
 	if (snd_stream->Finished()) return;
 
@@ -118,6 +121,11 @@ void AlexanderPlatz::Update() {
 		CopyMemory(fft_prev, fft_res, fft_res_size*sizeof(float));
 		cbuffer.bass_coef /= bass_samples_cnt;
 
+		if (cbuffer.bass_coef >= cbuffer.smooth_bass_coef)
+			cbuffer.smooth_bass_coef = cbuffer.bass_coef;
+		else
+			cbuffer.smooth_bass_coef -= min(10., cbuffer.smooth_bass_coef - cbuffer.bass_coef);
+
 		if (fft_res[15] > 1.09/* && fft_res[6] < 5.5*/)
 		{
 			float &sm = cbuffer.c1_time < cbuffer.c2_time ? cbuffer.c1_time : cbuffer.c2_time;
@@ -125,6 +133,22 @@ void AlexanderPlatz::Update() {
 
 			if (time - bg > 1.4)
 				sm = time;
+		}
+
+		float eye_treshold = 1000;
+		if ((time > 47 && time < 61) || (time > 95 && time < 115))
+			eye_treshold = 4.1;
+		else if (time > 143 && time < 162)
+			eye_treshold = 4.25;
+		else if (time > 124 && time < 255)
+			eye_treshold = 4.6;
+//		bool eue_time = (time > 47 && time < 61) || (time > 95 && time < 115) || (time > 143 && time < 162) || (time > 124 && time < 255);
+		if (fft_res[7] > eye_treshold/* && fft_res[6] < 5.5*/)
+		{
+			if (time - cbuffer.eye_time > 1.) {
+				cbuffer.eye_time = time;
+				cbuffer.eye_id += 1.;
+			}
 		}
 
 		inited = true;

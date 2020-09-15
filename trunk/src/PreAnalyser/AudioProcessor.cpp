@@ -56,6 +56,9 @@ void AudioProcessor::UpdateSum(int window/* = -1*/) {
 		for (int i = 0, size = FFT.data.size(); i < size; ++i) {
 			float sum = 0.f;
 			sum = FFT.data[i][j];
+//			if (j > 0) {
+//				sum += FFT.data[i][j-1];
+//			}
 //			for (float v : FFT.data[i]) {
 //				sum += v;
 //			}

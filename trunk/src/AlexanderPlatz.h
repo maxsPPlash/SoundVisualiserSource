@@ -10,9 +10,15 @@ struct alexander_platz_const_buffer
 	float time = 0;
 
 	float bass_coef = 0;
+	float smooth_bass_coef = 0;
 
-	float c1_time = -1;
-	float c2_time = -1;
+	float c1_time = -10;
+	float c2_time = -10;
+
+	float eye_time = -1;
+	float eye_id = -1;
+
+	float time_end = 0;
 };
 
 class AlexanderPlatz : public Engine {

@@ -96,7 +96,7 @@ float dEye(float3 p, float size) {
 	float cut_t = deye_cut(p, 1.02*size, 0.85*size, 0., 1.1 * size);
 
 	float eye = smin(eye_shell, eyeball, 0.01);
-	float curve = sin(shell_sphere/size)/1.6/size;
+	float curve = sin(shell_sphere/size)/2.0/size;
 	eye = smax(eye, cut_t+curve, 0.01);
 
 	float beck_cut = sdSphere(p - float3(0.0, 0, pupil_shift*size), 1.*size);
@@ -147,12 +147,12 @@ float GetDist(float3 p) {
 
 	const float move_start = 1.;
 	const float move_time = 1.;
-	float dpos = time < move_start ? 0. : lerp(0., 0.8, clamp((time - move_start) / move_time, 0., 1.));
-	float coef_merge = dpos * 3;
+	float dpos = time < move_start ? 0. : clamp((time - move_start) / move_time, 0., 1.);
+	float coef_merge = dpos * 2;
 
-	float s2 = dEye(p-float3(0.3-dpos, 1.3-dpos, 0.6), 1.0);
+	float s2 = dEye(p-float3(0.3-(1.*dpos), 1.3-(0.4*dpos), 0.6), 1.0);
 
-	float2 res = s1; float2(smin(s1, s2, 0.001+0.3*coef_merge), 1.);
+	float2 res = float2(smin(s1, s2, 0.001+0.3*coef_merge), 1.);
 
 	return res;
 }

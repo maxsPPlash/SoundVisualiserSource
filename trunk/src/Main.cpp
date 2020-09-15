@@ -22,7 +22,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return -1;
 	}
 
-	RayEye engine;
+	AlexanderPlatz engine;
 	if (engine.Initialize(hInstance, "Title", "MyWindowClass", 800, 450)) // , 1280, 720 // 512, 512
 	{
 		while (engine.ProcessMessages() == true)
