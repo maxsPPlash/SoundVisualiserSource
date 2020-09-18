@@ -23,7 +23,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	}
 
 	AlexanderPlatz engine;
-	if (engine.Initialize(hInstance, "Title", "MyWindowClass", 800, 450)) // , 1280, 720 // 512, 512
+	if (engine.Initialize(hInstance, "Title", "MyWindowClass", 640, 360)) //426, 240 // 640, 360 //800, 450 // 1280, 720 // 512, 512
 	{
 		while (engine.ProcessMessages() == true)
 		{

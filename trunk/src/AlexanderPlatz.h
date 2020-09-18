@@ -17,6 +17,7 @@ struct alexander_platz_const_buffer
 
 	float eye_time = -1;
 	float eye_id = -1;
+	float eye_stage = -1;
 
 	float time_end = 0;
 };

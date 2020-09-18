@@ -83,7 +83,7 @@ void smooth_array(T *data) {
 void AlexanderPlatz::Update() {
 	bool snd_updated = snd_stream->Update(time);
 
-	const int bass_samples_cnt = 4;
+	const int bass_samples_cnt = 10;
 
 	if (snd_stream->Finished()) return;
 
@@ -136,12 +136,28 @@ void AlexanderPlatz::Update() {
 		}
 
 		float eye_treshold = 1000;
-		if ((time > 47 && time < 61) || (time > 95 && time < 115))
+		float new_stage = 0;
+		if ((time > 47 && time < 61)) {
 			eye_treshold = 4.1;
-		else if (time > 143 && time < 162)
+			new_stage = 1.;
+		}
+		if ((time > 95 && time < 115)) {
+			eye_treshold = 4.1;
+			new_stage = 2.;
+		}
+		else if (time > 143 && time < 162) {
 			eye_treshold = 4.25;
-		else if (time > 124 && time < 255)
+			new_stage = 3.;
+		}
+		else if (time > 124 && time < 255) {
 			eye_treshold = 4.6;
+			new_stage = 4.;
+		}
+		if (new_stage != cbuffer.eye_stage) {
+			cbuffer.eye_id = -1;
+			cbuffer.eye_stage = new_stage;
+		}
+
 //		bool eue_time = (time > 47 && time < 61) || (time > 95 && time < 115) || (time > 143 && time < 162) || (time > 124 && time < 255);
 		if (fft_res[7] > eye_treshold/* && fft_res[6] < 5.5*/)
 		{
