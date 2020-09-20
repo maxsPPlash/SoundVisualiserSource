@@ -134,7 +134,7 @@ void road(inout float3 col, float2 uv) {
 	if (loc_uv.x > 0.205 && loc_c_time < 0.5 * new_col_time)
 		loc_c_time += cmx_t - cmn_t;
 
-	float move = pow(loc_c_time, 3)/35. + 0.005;
+	float move = pow(loc_c_time, 4)/35. + 0.005;
 	float2 csize = float2(0.05, 0.3) * move * 4;
 	float2 shift = float2(0.07 + 1.27 * move, 1 * move - csize.y);
 
@@ -220,19 +220,31 @@ float dEye(float3 p, float3 lookat, float distor_mul) {
 	float cut_t = deye_cut(p, 1.02, 0.85, 0., 1.1);
 
 	float eye = smin(eye_shell, eyeball, 0.01);
-	float curve = sin(shell_sphere)/2.0;
+	float curve = sin(shell_sphere)/1.5;
 	eye = smax(eye, cut_t+curve, 0.01);
 
-	float beck_cut = sdSphere(p - float3(0.0, 0, pupil_shift), 1.);
+	float beck_cut = sdSphere(p - float3(0.0, 0, pupil_shift*2.4), 2.1);
 	eye = smax(eye, beck_cut, 0.5);
 
 	return eye;
 }
 
-float GetDist(float3 p, float eye_light_coef) {
-	float3 lookat = float3(0., 0., 1);
+float2 CalcLookAt(float rnd_seed, float2 lookat_range, float lokat_chage) {
+	float lookat_time = floor(time / lokat_chage);
+	float2 prev_lookat = float2(rand(lookat_time+rnd_seed), rand(lookat_time+rnd_seed+5.5)) * lookat_range * 2.;
+	lookat_time += 1.;
+	float2 next_lookat = float2(rand(lookat_time+rnd_seed), rand(lookat_time+rnd_seed+5.5)) * lookat_range * 2.;
+	float lokat_chage_coef = smoothstep(lokat_chage - 0.2, lokat_chage, fmod(time, lokat_chage));
+
 	float shake_tm = round(time / 0.2);
-	lookat.xy += (float2(rand(shake_tm), rand(shake_tm+3.)) - 0.5) / 100;
+	float2 shake = (float2(rand(shake_tm), rand(shake_tm+3.)) - 0.5) / 100;
+
+	// lokat
+	return (-lookat_range + lerp(prev_lookat, next_lookat, lokat_chage_coef)) + shake;
+}
+
+float GetDist(float3 p, float loc_time) {
+	float3 lookat = float3(0., 0., 1);
 
 	// stage 3
 	float distor_mul = eye_stage > 2.5 && eye_stage < 3.5 ? eye_id / 5. : 0.;
@@ -242,34 +254,85 @@ float GetDist(float3 p, float eye_light_coef) {
 	float2 lookat_range = float2(0.2, 0.07);
 	float lokat_chage = 0.75 - (0.4 * distor_mul);
 
-	float lookat_time = floor(time / lokat_chage);
-	float2 prev_lookat = float2(rand(lookat_time), rand(lookat_time+5.5)) * lookat_range * 2.;
-	lookat_time += 1.;
-	float2 next_lookat = float2(rand(lookat_time), rand(lookat_time+5.5)) * lookat_range * 2.;
-	float lokat_chage_coef = smoothstep(lokat_chage - 0.2, lokat_chage, fmod(time, lokat_chage));
+	//
+//	float fake_stage = 4.;
+//	float fake_id = floor(time / 3);
+//	float fake_loct = fmod(time, 4);
 
-	// stage2
-	float look_coef = eye_stage > 1.5 && eye_stage < 2.5  ? (eye_id > 3.5 ? eye_light_coef : 1.-eye_light_coef) : 1.;
+	// stage 4
+	bool stage4 = eye_stage > 3.5;
 
-	// lokat
-	lookat.xy += look_coef * (-lookat_range + lerp(prev_lookat, next_lookat, lokat_chage_coef));
+	float shift_coef = 0.;
+	float2 eye_shift = 0.;
 
+	bool custom_lookat = false;
+
+	if (stage4) {
+		lokat_chage *= 0.75;
+
+		distor_mul = clamp((7. - abs(5 - eye_id)) / 4., 0., 2.);
+
+		if (eye_id > 8.5 && eye_id < 11.5) {
+			float back_coef = eye_id < 10.5 ? smoothstep(1.7, 1., loc_time) : 1.;
+			float time_coef = smoothstep(0., 0.4, loc_time) * back_coef * ((10. + sin(loc_time * 6)) * 0.005);
+			shift_coef = 1. * (20. + eye_id/2.) * time_coef;
+			eye_shift = shift_coef * -normalize(lookat_range);// normalize(float2(rand(eye_id), rand(eye_id+5.5)));
+
+			lookat.xy = clamp(-eye_shift/2., -lookat_range, lookat_range);
+			custom_lookat = true;
+		}
+	}
+
+	if (!custom_lookat) {
+//		float lookat_time = floor(time / lokat_chage);
+//		float2 prev_lookat = float2(rand(lookat_time), rand(lookat_time+5.5)) * lookat_range * 2.;
+//		lookat_time += 1.;
+//		float2 next_lookat = float2(rand(lookat_time), rand(lookat_time+5.5)) * lookat_range * 2.;
+//		float lokat_chage_coef = smoothstep(lokat_chage - 0.2, lokat_chage, fmod(time, lokat_chage));
+
+		// stage2
+		float look_coef = eye_stage > 1.5 && eye_stage < 2.5  ?  clamp((1.1-loc_time)*10., 0., 1.) : 1.;// clamp(eye_id > 3.5 ? (loc_time - 0.8)*10. : (1.-loc_time)*10., 0., 1.) : 1.;
+
+		// lokat
+		lookat.xy = look_coef * CalcLookAt(0., lookat_range, lokat_chage);// (-lookat_range + lerp(prev_lookat, next_lookat, lokat_chage_coef));
+	}
+
+//	float shake_tm = round(time / 0.2);
+//	lookat.xy += (float2(rand(shake_tm), rand(shake_tm+3.)) - 0.5) / 100;
+
+	float3 eye_pos = float3(0.0, 1.3, 0.6);
 	// 1st eye
-	float s1 = dEye(p-float3(0.0, 1.3, 0.6), lookat, distor_mul);
+	float res = dEye(p-eye_pos, lookat, distor_mul);
 
-	const float move_start = 1.;
-	const float move_time = 1.;
-	float dpos = time < move_start ? 0. : clamp((time - move_start) / move_time, 0., 1.);
-	float coef_merge = dpos * 2;
+	if (stage4) {
+		float3 eye2_pos = eye_pos;
 
-	float s2 = dEye(p-float3(0.3-(1.*dpos), 1.3-(0.4*dpos), 0.6), lookat, 0.);
+		if (eye_id > 4.5 && eye_id < 8.5) { // 4.5 - 8.5
+			float2 shift = float2(sin(time * 15.648), sin(time * 18.54)) / 80. * (eye_id - 4.);
+			shift_coef = length(shift) * 4.;
+			eye2_pos.xy += shift;
+		} else if (eye_id > 8.5 && eye_id < 11.5) { // 8.5 - 10.5
+			eye2_pos.xy += eye_shift;
 
-	float res = s1; smin(s1, s2, 0.001+0.3*coef_merge);
+			lookat.xy = clamp(eye_shift/2., -lookat_range, lookat_range);
+		}
+
+		if(eye_id > 10.5) {
+			eye2_pos.xy = eye_pos -lookat_range * 5;
+			shift_coef = 0;
+
+			lookat.xy = CalcLookAt(25.3, lookat_range, lokat_chage);
+		}
+
+		float s2 = dEye(p-eye2_pos, lookat, distor_mul);
+
+		res = smin(res, s2, 0.001+0.3*shift_coef);
+	}
 
 	return res;
 }
 
-float RayMarch(float3 ro, float3 rd, float eye_light_coef) {
+float RayMarch(float3 ro, float3 rd, float loc_time) {
 	float res = -1.0;
 
     float tmin = 0.5;
@@ -285,7 +348,7 @@ float RayMarch(float3 ro, float3 rd, float eye_light_coef) {
 	float t = tmin;
 	for( int i=0; i<256 && t<tmax; i++ )
 	{
-		float h = GetDist(ro+rd*t, eye_light_coef);
+		float h = GetDist(ro+rd*t, loc_time);
 		if(abs(h.x)<(0.0005*t))
 		{
 			res = t;
@@ -297,14 +360,14 @@ float RayMarch(float3 ro, float3 rd, float eye_light_coef) {
 	return res;
 }
 
-float3 GetNormal(float3 p, float eye_light_coef) {
-	float d = GetDist(p, eye_light_coef);
+float3 GetNormal(float3 p, float loc_time) {
+	float d = GetDist(p, loc_time);
 	float2 e = float2(0.01, 0);
 
 	float3 n = d - float3(
-		GetDist(p - e.xyy, eye_light_coef).x,
-		GetDist(p - e.yxy, eye_light_coef).x,
-		GetDist(p - e.yyx, eye_light_coef).x);
+		GetDist(p - e.xyy, loc_time).x,
+		GetDist(p - e.yxy, loc_time).x,
+		GetDist(p - e.yyx, loc_time).x);
 
 	return normalize(n);
 }
@@ -333,18 +396,18 @@ void rm_eye(inout float3 col, float2 uv)
 	float3 ro = float3(-0.0f, 1.f, -2.0f);
 	float3 rd = normalize(float3(uv.x+0., uv.y, 1));
 
-	float d = RayMarch(ro, rd, eye_light_coef);
+	float d = RayMarch(ro, rd, loc_t);
 
 	float3 p = ro + rd * d.x;
 
-	float l_col = float3(0.4, 0.4, 0.4);
+	float l_col = float3(0.3, 0.3, 0.3);
 
 	if (d > -0.5) {
 		// moving light
 		float3 lightPos = float3(0.8, 1.95, -1.9);
 		float3 light_dir = lightPos - p;
 		float3 l = normalize(light_dir) /* (pow(dot(light_dir, light_dir), 1)) * 3*/;
-		float3 normal = GetNormal(p, eye_light_coef);
+		float3 normal = GetNormal(p, loc_t);
 
 		// light coef
 		float main_light = clamp(dot(normal, l) + rand3d(p/*+time*/)*0.05, 0, 1) * 0.5;

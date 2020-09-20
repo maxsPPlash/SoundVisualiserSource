@@ -11,7 +11,7 @@ constexpr int bytes_per_pixel = 4;
 
 void Recorder::SaveNewFrame(unsigned int *data) {
 	char fn[250];
-	sprintf_s(fn, "%s%d.png", path.c_str(), frame_id);
+	sprintf_s(fn, "%s%05d.png", path.c_str(), frame_id);
 	SavePNG(fn, data);
 	frame_id++;
 }
