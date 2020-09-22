@@ -141,6 +141,7 @@
     <ClInclude Include="ISoundFile.h" />
     <ClInclude Include="IStaticTexture.h" />
     <ClInclude Include="IVideoStream.h" />
+    <ClInclude Include="LostSouls.h" />
     <ClInclude Include="OpenCVVideoStream.h" />
     <ClInclude Include="Projector.h" />
     <ClInclude Include="RayEye.h" />
@@ -170,6 +171,7 @@
     <ClCompile Include="Graphics\AdapterReader.cpp" />
     <ClCompile Include="Graphics\Graphics.cpp" />
     <ClCompile Include="Graphics\Shaders.cpp" />
+    <ClCompile Include="LostSouls.cpp" />
     <ClCompile Include="OpenCVVideoStream.cpp" />
     <ClCompile Include="Projector.cpp" />
     <ClCompile Include="RayEye.cpp" />
@@ -194,6 +196,10 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="composite.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="lost_souls.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
     </FxCompile>

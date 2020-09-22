@@ -113,9 +113,13 @@ void MainWnd::UpdateInfo(Point p) {
 	float dataylen = data.max_val;
 
 	double r_x = ((p.X - xmin) / xsz) * dataxlen * data.xmul;
+	int r_x_min = r_x / 60;
+	float r_x_sec = fmod(r_x, 60.);
+
 	double r_y = dataylen - ((p.Y - ymin) / ysz) * dataylen;
 
-	labelInfo->Content = "X : " + r_x.ToString() + " Y : " + r_y.ToString();
+
+	labelInfo->Content = "X : " + r_x_min.ToString() + ":" + r_x_sec.ToString() + " Y : " + r_y.ToString();
 }
 
 void MainWnd::ButtonOnClick(System::Object^  sender, RoutedEventArgs^  e) {

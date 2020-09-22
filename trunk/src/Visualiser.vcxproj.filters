@@ -1,12 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Input Data">
-      <UniqueIdentifier>{e620489d-f494-4a74-96d5-b58d2e67f76f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Input Data\Interface">
-      <UniqueIdentifier>{4a3defd3-9106-46ab-b09c-3739410354bb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -67,6 +61,15 @@
     </Filter>
     <Filter Include="Visual\AlexanderPlatz">
       <UniqueIdentifier>{0aae6bd6-03df-43be-be9f-c16302d00d2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Visual\LostSouls">
+      <UniqueIdentifier>{66def019-0f2e-4f12-a04c-c58b31987b51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input Data">
+      <UniqueIdentifier>{e620489d-f494-4a74-96d5-b58d2e67f76f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input Data\Interface">
+      <UniqueIdentifier>{4a3defd3-9106-46ab-b09c-3739410354bb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -172,6 +175,9 @@
     <ClInclude Include="AlexanderPlatz.h">
       <Filter>Visual\AlexanderPlatz</Filter>
     </ClInclude>
+    <ClInclude Include="LostSouls.h">
+      <Filter>Visual\LostSouls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WAVSoundFile.cpp">
@@ -243,6 +249,9 @@
     <ClCompile Include="AlexanderPlatz.cpp">
       <Filter>Visual\AlexanderPlatz</Filter>
     </ClCompile>
+    <ClCompile Include="LostSouls.cpp">
+      <Filter>Visual\LostSouls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="vertexshader.hlsl">
@@ -286,6 +295,9 @@
     </FxCompile>
     <FxCompile Include="alexander_platz.hlsl">
       <Filter>Visual\AlexanderPlatz</Filter>
+    </FxCompile>
+    <FxCompile Include="lost_souls.hlsl">
+      <Filter>Visual\LostSouls</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
