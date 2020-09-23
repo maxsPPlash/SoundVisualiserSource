@@ -80,7 +80,7 @@ void smooth_array(T *data) {
 void LostSouls::Update() {
 	bool snd_updated = snd_stream->Update(time);
 
-	const int bass_samples_cnt = 32;
+	const int bass_samples_cnt = 23;
 
 	if (snd_stream->Finished()) return;
 

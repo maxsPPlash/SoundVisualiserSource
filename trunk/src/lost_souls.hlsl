@@ -150,11 +150,13 @@ void bg_stars(inout float3 col, float2 uv) {
 		m += fade * NetLayer(st*size-/*M**/z, i, time);
 	}
 
-	float3 baseCol =float3(1., 1., 1.); // float3(s, cos(t*.4), -sin(t*.24))*.4+.6;
-//	if (m > 3)
-//		col += float3(0.1, 0.1, 1.);
-//	else
-		col += baseCol*m;
+	float wave_start = fmod(time, 2.);
+	float dist = length(uv - float2(0.3, 0.));
+	float ccoef = clamp(1.3-(sqrt(dist)), 0., 1.) * smoothstep(0.8, 0., wave_start) / 2.;
+	col += float3(0.7, 0.85, 0.9) * ccoef;
+
+	float3 baseCol = lerp(float3(1., 1., 1.), float3(0.7, 0.85, 0.9), ccoef); // float3(s, cos(t*.4), -sin(t*.24))*.4+.6;
+	col += baseCol*m;
 }
 
 float sdEquilateralTriangle(float2 p)
@@ -201,8 +203,8 @@ float calc_figure(int f_id, float2 uv, float arg) {
 	return 0;
 }
 
-void figures_morph(inout float3 col, float2 uv) {
-	float2 uv_loc = uv*4 * (1 + bass_coef/500.);
+void figures_morph(inout float3 col, float2 uv, float sz) {
+	float2 uv_loc = uv/sz * (1 + bass_coef/500.);
 
 	float pi = 3.1415;
 
@@ -235,9 +237,12 @@ void figures_morph(inout float3 col, float2 uv) {
 
 	float d = lerp(d1, d2, t_coef);
 
-	float coef = smoothstep(0.01, 0., d) * clamp((2.+cos(d*50)) / 2., 0., 1.);
+	float shade_coef = smoothstep(0.2, 0., pow(abs(d*sz), 0.5));
+	col = lerp(col, 0.0, shade_coef);
 
-	float3 figre_color = 1.;
+	float coef = smoothstep(0.01, 0., d*sz);
+
+	float3 figre_color = lerp(0.2, 1., clamp((2.+cos(d*50)) / 2., 0., 1.));
 	col = lerp(col, figre_color, coef);
 }
 
@@ -249,7 +254,16 @@ float4 main(PS_INPUT input) : SV_TARGET
 	float3 col = 0.;
 
 	bg_stars(col, uv);
-	figures_morph(col, uv);
+
+	float k = time / 2.;
+	for (int i = 0; i < 4; ++i) {
+		if (i == 0 || cos(k) > -0.1 + i * 0.1)
+			figures_morph(col, uv, 0.45 - (i * 0.1));
+//		k += 0.2;
+//		figures_morph(col, uv, 0.35);
+//		figures_morph(col, uv, 0.25);
+//		figures_morph(col, uv, 0.15);
+	}
 
 	// Output to screen
 	return float4(col,1.0);
