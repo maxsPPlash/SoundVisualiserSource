@@ -118,6 +118,12 @@ void LostSouls::Update() {
 		CopyMemory(fft_prev, fft_res, fft_res_size*sizeof(float));
 		cbuffer.bass_coef /= bass_samples_cnt;
 
+		if (fft_res[22] > 0.9/* && fft_res[6] < 5.5*/)
+		{
+			if (time - cbuffer.click_time > 1.0)
+				cbuffer.click_time = time;
+		}
+
 		inited = true;
 	}
 

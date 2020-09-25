@@ -246,6 +246,15 @@ float2 CalcLookAt(float rnd_seed, float2 lookat_range, float lokat_chage) {
 float GetDist(float3 p, float loc_time) {
 	float3 lookat = float3(0., 0., 1);
 
+	//
+//	float fake_stage = 4.;
+//	float fake_id = floor(time / 3);
+//	float fake_loct = fmod(time, 4);
+//
+//	float eye_stage = fake_stage;
+//	float eye_id = fake_id;
+//	loc_time = fake_loct;
+
 	// stage 3
 	float distor_mul = eye_stage > 2.5 && eye_stage < 3.5 ? eye_id / 5. : 0.;
 
@@ -253,11 +262,6 @@ float GetDist(float3 p, float loc_time) {
 	// random lookat
 	float2 lookat_range = float2(0.2, 0.07);
 	float lokat_chage = 0.75 - (0.4 * distor_mul);
-
-	//
-//	float fake_stage = 4.;
-//	float fake_id = floor(time / 3);
-//	float fake_loct = fmod(time, 4);
 
 	// stage 4
 	bool stage4 = eye_stage > 3.5;
@@ -272,11 +276,15 @@ float GetDist(float3 p, float loc_time) {
 
 		distor_mul = clamp((7. - abs(5 - eye_id)) / 4., 0., 2.);
 
-		if (eye_id > 8.5 && eye_id < 11.5) {
-			float back_coef = eye_id < 10.5 ? smoothstep(1.7, 1., loc_time) : 1.;
-			float time_coef = smoothstep(0., 0.4, loc_time) * back_coef * ((10. + sin(loc_time * 6)) * 0.005);
-			shift_coef = 1. * (20. + eye_id/2.) * time_coef;
-			eye_shift = shift_coef * -normalize(lookat_range);// normalize(float2(rand(eye_id), rand(eye_id+5.5)));
+		eye_shift = eye_id > 8.5 ? -lookat_range * 5 : 0.;
+
+		if (eye_id > 8.5 && eye_id < 12.5) {
+			if (eye_id < 11.5) {
+				float back_coef = eye_id < 10.5 ? smoothstep(1.7, 1., loc_time) : 1.;
+				float time_coef = smoothstep(0., 0.4, loc_time) * back_coef * ((10. + sin(loc_time * 6)) * 0.005);
+				shift_coef = 1. * (20. + eye_id/2.) * time_coef;
+				eye_shift = shift_coef * -normalize(lookat_range);// normalize(float2(rand(eye_id), rand(eye_id+5.5)));
+			}
 
 			lookat.xy = clamp(-eye_shift/2., -lookat_range, lookat_range);
 			custom_lookat = true;
@@ -310,19 +318,19 @@ float GetDist(float3 p, float loc_time) {
 		if (eye_id > 4.5 && eye_id < 8.5) { // 4.5 - 8.5
 			float2 shift = float2(sin(time * 15.648), sin(time * 18.54)) / 80. * (eye_id - 4.);
 			shift_coef = length(shift) * 4.;
-			eye2_pos.xy += shift;
-		} else if (eye_id > 8.5 && eye_id < 11.5) { // 8.5 - 10.5
-			eye2_pos.xy += eye_shift;
-
+			eye_shift = shift;
+		} else if (eye_id > 8.5 && eye_id < 12.5) { // 8.5 - 10.5
 			lookat.xy = clamp(eye_shift/2., -lookat_range, lookat_range);
 		}
 
-		if(eye_id > 10.5) {
-			eye2_pos.xy = eye_pos -lookat_range * 5;
+		if(eye_id > 12.5) {
+//			eye2_pos.xy = eye_pos -lookat_range * 5;
 			shift_coef = 0;
 
 			lookat.xy = CalcLookAt(25.3, lookat_range, lokat_chage);
 		}
+
+		eye2_pos.xy += eye_shift;
 
 		float s2 = dEye(p-eye2_pos, lookat, distor_mul);
 
@@ -376,12 +384,13 @@ void rm_eye(inout float3 col, float2 uv)
 {
 	uv.y *= -1.f;
 
+//	float fake_loct = fmod(time, 4);
 	float loc_t = time - eye_time;
 
-	const float fade_in = 0.1;
+	const float fade_in = 0.02;
 	const float tm = fade_in + 1.0;
 	const float fade_out = tm + 0.5;
-	float fi_c = smoothstep(0., fade_in, loc_t);
+	float fi_c = 1.;
 	float fo_c = smoothstep(fade_out, tm, loc_t);
 
 	float eye_light_coef = fi_c * fo_c;
@@ -455,7 +464,7 @@ float4 main(PS_INPUT input) : SV_TARGET
 	float2 resolution = float2(wnd_w, wnd_h);
 	float2 uv = (input.inPosition.xy-.5*resolution) / resolution.y;
 
-	uv += (papertex.Sample(objSamplerState, input.inPosition.xy/resolution).xy-0.5) * 0.004;
+//	uv += (papertex.Sample(objSamplerState, input.inPosition.xy/resolution).xy-0.5) * 0.004;
 
 	float3 col = 0;
 
@@ -466,8 +475,8 @@ float4 main(PS_INPUT input) : SV_TARGET
 
 	if (time < 1)
 		col = lerp(0., col, time);
-	if (time > time_end - 4.)
-		col = lerp(0., col, clamp(time_end - time, 0, 1));
+	if (time > time_end - 9.)
+		col = lerp(0., col, clamp(time_end - time + 8., 0, 1));
 
 	// Output to screen
 	return float4(col,1.0);
