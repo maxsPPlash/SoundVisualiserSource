@@ -120,8 +120,10 @@ void LostSouls::Update() {
 
 		if (fft_res[22] > 0.9/* && fft_res[6] < 5.5*/)
 		{
-			if (time - cbuffer.click_time > 1.0)
+			if (time - cbuffer.click_time > 1.0) {
 				cbuffer.click_time = time;
+				cbuffer.click_id++;
+			}
 		}
 
 		inited = true;

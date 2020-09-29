@@ -16,7 +16,7 @@
 //class SoundPlayer;
 //class SoundAnalyser;
 
-constexpr int fft_res_size = 512;
+constexpr int fft_res_size = 128;
 
 class Engine
 {

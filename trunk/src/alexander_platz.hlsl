@@ -23,6 +23,7 @@ struct PS_INPUT
 	float2 inTexCoord : TEXCOORD;
 };
 
+Texture2D ffttex : TEXTURE : register(t0);
 Texture2D papertex : TEXTURE : register(t1);
 SamplerState objSamplerState : SAMPLER : register(s0);
 
@@ -49,6 +50,14 @@ float dSegment(float2 p, float2 a, float2 b)
     float2 pa = p-a, ba = b-a;
     float h = clamp( dot(pa,ba)/dot(ba,ba), 0.0, 1.0 );
     return length( pa - ba*h );
+}
+
+// make vert_segment
+float2 dWaveSegment(float2 p, float2 a, float2 b)
+{
+    float2 pa = p-a, ba = b-a;
+    float h = clamp( dot(pa,ba)/dot(ba,ba), 0.0, 1.0 );
+    return float2(length( pa - ba*h ), h);
 }
 
 float sdBox(float2 p, float2 b)
@@ -112,13 +121,11 @@ void road(inout float3 col, float2 uv) {
 	float2 loc_uv = uv;
 	loc_uv.x = abs(loc_uv.x);
 
-	float distor_fade = clamp(time/10, 0., 1.);
-	float distor = sin((loc_uv.x+time)*100) * sin((uv.y+time)*100) / 7000. * bass_coef * distor_fade;
-
 	// road lines
-	float rd = dSegment(loc_uv, float2(0.05, 0.), float2(0.6, 0.7)) + distor;
+	float2 rds = dWaveSegment(loc_uv, float2(0.05, 0.), float2(0.4, 0.54));
 	float depth_fade = clamp(loc_uv.y*4, 0.0001, 1.);
-	float coef = (1.-smoothstep(0.001, 0.005 + 0.01*depth_fade , rd));
+	float fft = ffttex.Sample(objSamplerState, 1.-rds.y);
+	float coef = (1.-smoothstep(0.001 + fft*0.02, (0.005 + 0.01*depth_fade) + fft*0.1, rds.x));
 	col = lerp(col, float3(0.9, 0.9, 1), depth_fade * coef);
 
 	// columns
@@ -475,8 +482,8 @@ float4 main(PS_INPUT input) : SV_TARGET
 
 	if (time < 1)
 		col = lerp(0., col, time);
-	if (time > time_end - 9.)
-		col = lerp(0., col, clamp(time_end - time + 8., 0, 1));
+	if (time > time_end - 7.)
+		col = lerp(0., col, clamp(time_end - time - 6., 0, 1));
 
 	// Output to screen
 	return float4(col,1.0);

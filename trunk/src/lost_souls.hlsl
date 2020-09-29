@@ -7,6 +7,7 @@ cbuffer mycBuffer : register(b0)
 	float bass_coef;
 
 	float click_time;
+	float click_id;
 };
 
 struct PS_INPUT
@@ -21,17 +22,20 @@ SamplerState objSamplerState : SAMPLER : register(s0);
 #define S(a, b, t) smoothstep(a, b, t)
 #define NUM_LAYERS 4.
 
-//#define SIMPLE
 
-
-float N21(float2 p) {
+float rand21(float2 p) {
 	float3 a = frac(float3(p.xyx) * float3(213.897, 653.453, 253.098));
 	a += dot(a, a.yzx + 79.76);
 	return frac((a.x + a.y) * a.z);
 }
 
+float rand11(float n)
+{
+	return frac(sin(n)*43758.5453);
+}
+
 float2 GetPos(float2 id, float2 offs, float t) {
-	float n = N21(id+offs);
+	float n = rand21(id+offs);
 	float n1 = frac(n*10.);
 	float n2 = frac(n*100.);
 	float a = t+n;
@@ -137,8 +141,6 @@ void bg_stars(inout float3 col, float2 uv) {
 
 	float s, c;
 	sincos(t, s, c);
-//	float s = sin(t);
-//	float c = cos(t);
 	float2x2 rot = float2x2(c, -s, s, c);
 	float2 st = mul(uv,rot);
 //	M *= rot*2.;
@@ -153,12 +155,15 @@ void bg_stars(inout float3 col, float2 uv) {
 	}
 
 	float click_loc = time - click_time;
-	float dist = length(uv - float2(0.3, 0.));
+
+	float2 click_pos = float2(rand11(click_id+100.123), rand11(click_id+1230.764)) * 0.7 - 0.35;
+
+	float dist = length(uv - click_pos); // float2(0.3, 0.)
 	float ccoef = clamp(1.3-(sqrt(dist)), 0., 1.) * smoothstep(0.8, 0., click_loc) / 2.;
 	col += float3(0.7, 0.85, 0.9) * ccoef;
 
 	float3 baseCol = lerp(float3(1., 1., 1.), float3(0.7, 0.85, 0.9), ccoef); // float3(s, cos(t*.4), -sin(t*.24))*.4+.6;
-	col += baseCol*m;
+	col += baseCol*clamp(m, 0., 1.);
 }
 
 float sdEquilateralTriangle(float2 p)
@@ -252,10 +257,17 @@ void figures_morph(inout float3 col, float2 uv, float sz, bool shade) {
 
 void mul_figures_morph(inout float3 col, float2 uv) {
 	float k = time / 2.;
-	for (int i = 0; i < 4; ++i) {
-		if (i == 0 || cos(k) > -0.1 + i * 0.1)
-			figures_morph(col, uv, 0.45 - (i * 0.1), i != 0);
-	}
+
+	float3 old_col = col;
+
+//	for (int i = 0; i < 4; ++i) {
+//		if (i == 0 || cos(k) > -0.1 + i * 0.1)
+//			figures_morph(col, uv, 0.45 - (i * 0.1), i != 0);
+//	}
+
+	figures_morph(col, uv, 0.35, false);
+
+	col = lerp(old_col, col, smoothstep(6., 15., time));
 }
 
 float4 main(PS_INPUT input) : SV_TARGET
@@ -267,6 +279,11 @@ float4 main(PS_INPUT input) : SV_TARGET
 
 	bg_stars(col, uv);
 	mul_figures_morph(col, uv);
+
+	const float fade_time = 6.;
+	if (time < fade_time) {
+		col = lerp(0., col, smoothstep(0., fade_time, time));
+	}
 
 	// Output to screen
 	return float4(col,1.0);

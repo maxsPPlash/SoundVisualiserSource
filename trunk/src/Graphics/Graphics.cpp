@@ -107,6 +107,7 @@ void Graphics::RenderFrame()
 
 		const DWORD buf_size = 4 * width * height;
 
+		// better do it only once
 		unsigned int *data = (unsigned int *)malloc(buf_size);
 
 		D3D11_MAPPED_SUBRESOURCE mappedtResource;
@@ -117,6 +118,7 @@ void Graphics::RenderFrame()
 		pBackBufferStaging = NULL;
 
 		recorder->SaveNewFrame(data);
+		free(data);
 	}
 
 	this->swapchain->Present(1, NULL);

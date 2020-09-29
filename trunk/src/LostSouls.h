@@ -12,6 +12,7 @@ struct lost_souls_const_buffer
 	float bass_coef = 0;
 
 	float click_time = -10.f;
+	float click_id = -1.f;
 };
 
 class LostSouls : public Engine {

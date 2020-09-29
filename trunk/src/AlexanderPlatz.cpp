@@ -19,6 +19,8 @@ AlexanderPlatz::AlexanderPlatz() {
 	tent_len = 0.f;
 	cam_pos = 0.f;
 
+	time = 0.f;
+
 	for (int i = 0; i < fft_res_size; ++i) {
 		fft_data[i] = 0;
 		fft_prev[i] - 0;
@@ -34,17 +36,17 @@ AlexanderPlatz::~AlexanderPlatz() {
 }
 
 bool AlexanderPlatz::Initialize(HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height) {
-//	recorder = new Recorder(frame_save_path, width, height);
+	recorder = new Recorder(frame_save_path, width, height);
 	snd = new WAVSoundFile(file_path);
 	snd_stream = new SoundStreamFile(snd, sound_step);
 
-	player.Play(snd);
+//	player.Play(snd);
 	prev_time = start_time = std::chrono::steady_clock::now();
 
 	scb.Data(&cbuffer);
 	scb.Size(sizeof(cbuffer));
 
-	audo_data_tex = new ShaderDynTexture(fft_data, 1, 512, DT_U8R, 0);
+	audo_data_tex = new ShaderDynTexture(fft_data, 1, fft_res_size, DT_U8R, 0);
 	std::vector<IDynamicTexture*> dyn_textures;
 	dyn_textures.push_back(audo_data_tex);
 
@@ -85,7 +87,7 @@ void AlexanderPlatz::Update() {
 
 	const int bass_samples_cnt = 10;
 
-	if (snd_stream->Finished()) {
+	if (/*time > 60. || */snd_stream->Finished()) {
 		exit(0);
 		return;
 	}
