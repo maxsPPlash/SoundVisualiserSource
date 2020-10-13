@@ -80,9 +80,10 @@ void MainWnd::SetupGraph() {
 	ViewData &data = ap->getDataSum();
 	float id = 0;
 	PointCollection ^points = gcnew PointCollection();
-	for (float v : data.data[dataScroll->Track->Value]) {
+	int i = int(round(dataScroll->Track->Value));
+	for (float v : data.data[i]) {
 		float val_loc = v / data.max_val;
-		float x_loc = id / data.data[dataScroll->Track->Value].size();
+		float x_loc = id / data.data[i].size();
 
 		points->Add(Point(xmin + (xsz * x_loc), ymax - (val_loc * ysz)));
 		id += 1;
@@ -118,8 +119,9 @@ void MainWnd::UpdateInfo(Point p) {
 
 	double r_y = dataylen - ((p.Y - ymin) / ysz) * dataylen;
 
+	int i = int(round(dataScroll->Track->Value));
 
-	labelInfo->Content = "X : " + r_x_min.ToString() + ":" + r_x_sec.ToString() + " Y : " + r_y.ToString();
+	labelInfo->Content = "X : " + r_x_min.ToString() + ":" + r_x_sec.ToString() + " Y : " + r_y.ToString() + ", ID :" + i.ToString();
 }
 
 void MainWnd::ButtonOnClick(System::Object^  sender, RoutedEventArgs^  e) {

@@ -13,6 +13,15 @@ struct lost_souls_const_buffer
 
 	float click_time = -10.f;
 	float click_id = -1.f;
+
+	float horn_time = -10.f;
+	float horn_id = -1.f;
+
+	float hats_time = -10.f;
+	float hats_id = -1.f;
+
+	float hatsin_time = -10.f;
+	float power300 = 0.;
 };
 
 class LostSouls : public Engine {
@@ -45,6 +54,9 @@ private:
 
 	float fft_prev[fft_res_size];
 	unsigned char fft_data[fft_res_size];
+
+	int nohats_cnt;
+	int nohatsin_cnt;
 
 	bool inited;
 };

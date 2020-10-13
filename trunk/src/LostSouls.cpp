@@ -19,6 +19,8 @@ LostSouls::LostSouls() {
 	tent_len = 0.f;
 	cam_pos = 0.f;
 
+	nohats_cnt = 0;
+
 	for (int i = 0; i < fft_res_size; ++i) {
 		fft_data[i] = 0;
 		fft_prev[i] - 0;
@@ -34,7 +36,7 @@ LostSouls::~LostSouls() {
 }
 
 bool LostSouls::Initialize(HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height) {
-	//	recorder = new Recorder(frame_save_path, width, height);
+//	recorder = new Recorder(frame_save_path, width, height);
 	snd = new WAVSoundFile(file_path);
 	snd_stream = new SoundStreamFile(snd, sound_step);
 
@@ -84,19 +86,15 @@ void LostSouls::Update() {
 
 	if (snd_stream->Finished()) return;
 
-// FOR CAPTURE
-//	float dt = 1.f/30.f;
-//	time += dt;
-
 	std::chrono::time_point<std::chrono::steady_clock> cur_time = std::chrono::steady_clock::now();
 	// FOR REALTIME
 	std::chrono::duration<float> cdt = cur_time - prev_time;
 	std::chrono::duration<float> diff = cur_time - start_time;
 	float dt = cdt.count();
 	time = diff.count();
+	prev_time = cur_time;
 
 	cbuffer.time = time;
-	prev_time = cur_time;
 
 	if (snd_updated || !inited) {
 		float fft_res[fft_res_size];
@@ -126,8 +124,47 @@ void LostSouls::Update() {
 			}
 		}
 
+		if (fft_res[41] > 0.6/* && fft_res[6] < 5.5*/)
+		{
+			if (time - cbuffer.horn_time > 5.0) {
+				cbuffer.horn_time = time;
+				cbuffer.horn_id++;
+			}
+		}
+
+		if (fft_res[300] > 0.2/* && fft_res[6] < 5.5*/)
+		{
+			if (nohats_cnt > 10) {
+				cbuffer.hats_time = time;
+				cbuffer.hats_id++;
+			}
+			nohats_cnt = 0;
+		} else {
+			nohats_cnt++;
+		}
+
+		if (fft_res[300] > 0.35/* && fft_res[6] < 5.5*/)
+		{
+			if (nohatsin_cnt > 5) {
+				cbuffer.hatsin_time = time;
+			}
+			nohatsin_cnt = 0;
+		} else {
+			nohatsin_cnt++;
+		}
+
+		float new300 = fft_res[300];
+		if (new300 >= cbuffer.power300 && new300 > 0.3)
+			cbuffer.power300 = new300;
+		else if (new300 < cbuffer.power300)
+			cbuffer.power300 -= min(0.005, cbuffer.power300 - new300);
+
 		inited = true;
 	}
+
+// FOR CAPTURE
+//	float dt = 1.f/30.f;
+//	time += dt;
 
 	Engine::Update();
 }
