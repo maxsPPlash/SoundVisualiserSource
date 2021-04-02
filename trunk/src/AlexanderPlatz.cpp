@@ -92,13 +92,13 @@ void AlexanderPlatz::Update() {
 		return;
 	}
 
-	std::chrono::time_point<std::chrono::steady_clock> cur_time = std::chrono::steady_clock::now();
-	// FOR REALTIME
-	std::chrono::duration<float> cdt = cur_time - prev_time;
-	std::chrono::duration<float> diff = cur_time - start_time;
-	float dt = cdt.count();
-	time = diff.count();
-	prev_time = cur_time;
+//	std::chrono::time_point<std::chrono::steady_clock> cur_time = std::chrono::steady_clock::now();
+//	// FOR REALTIME
+//	std::chrono::duration<float> cdt = cur_time - prev_time;
+//	std::chrono::duration<float> diff = cur_time - start_time;
+//	float dt = cdt.count();
+//	time = diff.count();
+//	prev_time = cur_time;
 
 	cbuffer.time = time;
 
@@ -172,8 +172,8 @@ void AlexanderPlatz::Update() {
 	}
 
 	// FOR CAPTURE
-//	float dt = 1.f/60.f;
-//	time += dt;
+	float dt = 1.f/60.f;
+	time += dt;
 
 	Engine::Update();
 }

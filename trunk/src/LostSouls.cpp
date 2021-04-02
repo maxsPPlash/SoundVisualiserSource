@@ -5,7 +5,7 @@ static const char *frame_save_path = "imgs\\img_";
 //const char *file_path = "./Summer.wav";
 //static const char *file_path = "./GoFuckYourself.wav";
 //static const char *file_path = "./techno_test.wav";
-static const char *file_path = "./Spork_Lost_Souls.wav";
+static const char *file_path = "./Spork_Lost_Souls1.wav";
 //const char *file_path = "./BrianJames.wav";
 
 constexpr int sound_step = 2048;
@@ -36,11 +36,11 @@ LostSouls::~LostSouls() {
 }
 
 bool LostSouls::Initialize(HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height) {
-//	recorder = new Recorder(frame_save_path, width, height);
+	recorder = new Recorder(frame_save_path, width, height);
 	snd = new WAVSoundFile(file_path);
 	snd_stream = new SoundStreamFile(snd, sound_step);
 
-	player.Play(snd);
+//	player.Play(snd);
 	prev_time = start_time = std::chrono::steady_clock::now();
 
 	scb.Data(&cbuffer);
@@ -86,13 +86,13 @@ void LostSouls::Update() {
 
 	if (snd_stream->Finished()) return;
 
-	std::chrono::time_point<std::chrono::steady_clock> cur_time = std::chrono::steady_clock::now();
-	// FOR REALTIME
-	std::chrono::duration<float> cdt = cur_time - prev_time;
-	std::chrono::duration<float> diff = cur_time - start_time;
-	float dt = cdt.count();
-	time = diff.count();
-	prev_time = cur_time;
+//	std::chrono::time_point<std::chrono::steady_clock> cur_time = std::chrono::steady_clock::now();
+//	// FOR REALTIME
+//	std::chrono::duration<float> cdt = cur_time - prev_time;
+//	std::chrono::duration<float> diff = cur_time - start_time;
+//	float dt = cdt.count();
+//	time = diff.count();
+//	prev_time = cur_time;
 
 	cbuffer.time = time;
 
@@ -116,7 +116,7 @@ void LostSouls::Update() {
 		CopyMemory(fft_prev, fft_res, fft_res_size*sizeof(float));
 		cbuffer.bass_coef /= bass_samples_cnt;
 
-		if (fft_res[22] > 0.9/* && fft_res[6] < 5.5*/)
+		if (fft_res[23] > 0.55/* && fft_res[6] < 5.5*/)
 		{
 			if (time - cbuffer.click_time > 1.0) {
 				cbuffer.click_time = time;
@@ -124,17 +124,17 @@ void LostSouls::Update() {
 			}
 		}
 
-		if (fft_res[41] > 0.6/* && fft_res[6] < 5.5*/)
+		if (fft_res[40] > 0.6/* && fft_res[6] < 5.5*/)
 		{
-			if (time - cbuffer.horn_time > 5.0) {
+			if (time - cbuffer.horn_time > 7.0) {
 				cbuffer.horn_time = time;
 				cbuffer.horn_id++;
 			}
 		}
 
-		if (fft_res[300] > 0.2/* && fft_res[6] < 5.5*/)
+		if (fft_res[301] > 0.15/* && fft_res[6] < 5.5*/)
 		{
-			if (nohats_cnt > 10) {
+			if (cbuffer.hats_id < 1 && nohats_cnt > 10) {
 				cbuffer.hats_time = time;
 				cbuffer.hats_id++;
 			}
@@ -143,7 +143,7 @@ void LostSouls::Update() {
 			nohats_cnt++;
 		}
 
-		if (fft_res[300] > 0.35/* && fft_res[6] < 5.5*/)
+		if (fft_res[300] > 0.05/* && fft_res[6] < 5.5*/)
 		{
 			if (nohatsin_cnt > 5) {
 				cbuffer.hatsin_time = time;
@@ -153,18 +153,21 @@ void LostSouls::Update() {
 			nohatsin_cnt++;
 		}
 
-		float new300 = fft_res[300];
-		if (new300 >= cbuffer.power300 && new300 > 0.3)
+		float new300 = fft_res[301];
+		if (new300 >= cbuffer.power300 && new300 > 0.45) {
 			cbuffer.power300 = new300;
-		else if (new300 < cbuffer.power300)
-			cbuffer.power300 -= min(0.005, cbuffer.power300 - new300);
+			last_300 = time;
+		}
+		else if (new300 < cbuffer.power300 && time - last_300 > 4) {
+			cbuffer.power300 -= 0.02;
+		}
 
 		inited = true;
 	}
 
 // FOR CAPTURE
-//	float dt = 1.f/30.f;
-//	time += dt;
+	float dt = 1.f/60.f;
+	time += dt;
 
 	Engine::Update();
 }

@@ -4,8 +4,9 @@ static const char *frame_save_path = "imgs\\img_";
 //const char *file_path = "./test_shader.wav";
 //const char *file_path = "./Summer.wav";
 //static const char *file_path = "./GoFuckYourself.wav";
-static const char *file_path = "./techno_test.wav";
+//static const char *file_path = "./techno_test.wav";
 //const char *file_path = "./BrianJames.wav";
+static const char *file_path = "./Spork_Lost_Souls.wav";
 
 constexpr int sound_step = 2048;
 
@@ -35,11 +36,11 @@ TentacleVis::~TentacleVis() {
 }
 
 bool TentacleVis::Initialize(HINSTANCE hInstance, std::string window_title, std::string window_class, int width, int height) {
-	//	recorder = new Recorder(frame_save_path, width, height);
+	recorder = new Recorder(frame_save_path, width, height);
 	snd = new WAVSoundFile(file_path);
 	snd_stream = new SoundStreamFile(snd, sound_step);
 
-	player.Play(snd);
+//	player.Play(snd);
 	prev_time = start_time = std::chrono::steady_clock::now();
 
 	scb.Data(&cbuffer);
@@ -49,7 +50,7 @@ bool TentacleVis::Initialize(HINSTANCE hInstance, std::string window_title, std:
 	std::vector<IDynamicTexture*> dyn_textures;
 	dyn_textures.push_back(audo_data_tex);
 
-	image = new ShaderStaticTexture(L"Data\\Textures\\piano.png", 1);
+	image = new ShaderStaticTexture(L"avatar_centre.png", 1);
 	std::vector<IStaticTexture*> stat_textures;
 	stat_textures.push_back(image);
 
@@ -178,7 +179,7 @@ void TentacleVis::UpdateFreqs()
 void TentacleVis::UpdateBass() {
 	bool snd_updated = snd_stream->Update(time) && !snd_stream->Finished();
 
-	const int bass_samples_cnt = 8;
+	const int bass_samples_cnt = 12;
 
 //	if (snd_stream->Finished()) return;
 
@@ -186,19 +187,19 @@ void TentacleVis::UpdateBass() {
 //	float dt = 1.f/30.f;
 //	time += dt;
 
-	std::chrono::time_point<std::chrono::steady_clock> cur_time = std::chrono::steady_clock::now();
-	// FOR REALTIME
-	std::chrono::duration<float> cdt = cur_time - prev_time;
-	std::chrono::duration<float> diff = cur_time - start_time;
-	float dt = cdt.count();
-	time = diff.count();
+//	std::chrono::time_point<std::chrono::steady_clock> cur_time = std::chrono::steady_clock::now();
+//	// FOR REALTIME
+//	std::chrono::duration<float> cdt = cur_time - prev_time;
+//	std::chrono::duration<float> diff = cur_time - start_time;
+//	float dt = cdt.count();
+//	time = diff.count();
+//	prev_time = cur_time;
 
 	cbuffer.time = time;
-	prev_time = cur_time;
 
 // FOR CAPTURE
-//	float dt = 1.f/30.f;
-//	time += dt;
+	float dt = 1.f/30.f;
+	time += dt;
 
 	float fft_res[fft_res_size];
 	if (snd_updated || !inited) {

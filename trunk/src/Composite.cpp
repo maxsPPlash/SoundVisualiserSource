@@ -88,7 +88,10 @@ void Composite::Update() {
 
 	const int bass_samples_cnt = 2;
 
-	if (snd_stream->Finished()) return;
+	if (time > 120. || snd_stream->Finished()) {
+		exit(0);
+		return;
+	}
 
 // FOR CAPTURE
 //	float dt = 1.f/30.f;

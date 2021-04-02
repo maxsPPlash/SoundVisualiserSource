@@ -231,19 +231,19 @@ float calc_figure(int f_id, float2 uv, float arg) {
 }
 
 void figures_morph(inout float3 col, float2 uv, float sz, bool shade) {
-	float2 uv_loc = uv/sz * (1 + bass_coef/500.);
+	float2 uv_loc = uv/sz / (1 + bass_coef/600.);
 
 	float pi = 3.1415;
-					// 0  1  2		3		4		5			6		7			8		9		10			11		12			13			14	15		16		17		18		19		20		21		22		23		24
-	int figs[]		= {0, 2, 2,		2,		1,		1,			0,		0,			0,		2,		2,			2,		1,			1,			0,	1,		0,		3,		3,		4,		3,		3,		2,		0,		0,		};
-	float turn[]	= {0, 0, 0,		0,		0.,		0.,			0.,		pi*2.5,		pi*5,	pi*5,	pi*5,		pi*5,	pi*5,		0.,			0.,	pi*2.,	pi*2.,	pi*2.,	pi*2.,	pi*1.,	pi*1.,	pi*1.,	pi*1.,	pi*1.,	pi*1.,	};
-	float arg[]		= {0, 0, 0.5,	0,		0,		0,			0.,		0,			0,		0,		0.5,		0,		0,			0,			0.,	0.,		0.,		0.,		0.2,	0.,		0.0,	0.1,	0.3,	0,		0,		};
+					// 0  1  2		3	4	5	6		7		8		9	10	11		12		13		14		15		16		17	18	19		20		21		22		23		24		25		26		27		28		29		30		31		32
+	int figs[]		= {0, 2, 2,		2,	1,	1,	3,		3,		3,		0,	0,	0,		0,		2,		2,		2,		1,		1,	0,	1,		0,		3,		3,		3,		4,		4,		1,		2,		2,		2,		2,		0,		0,		};
+	float turn[]	= {0, 0, 0,		0,	0.,	0.,	0.,		0.,		0.,		0.,	0.,	pi*2.5,	pi*5,	pi*5,	pi*5,	pi*5,	pi*5,	0.,	0.,	pi*2.,	pi*2.,	pi*2.,	pi*2.,	pi*2.,	pi*1.,	pi*1.,	pi*1.,	pi*3,	pi*1,	pi*1,	pi*1,	pi*1.,	pi*1.,	};
+	float arg[]		= {0, 0, 0.5,	0,	0,	0,	0.4,	0.2,	0.0,	0.,	0.,	0,		0,		0,		0.5,	0,		0,		0,	0.,	0.,		0.,		0.,		0.,		0.2,	0.,		0.,		0.,		0.,		0.5,	0.,		0.,		0,		0,		};
 
 //	float time_start = 60.;
 
 //	float time_loc = max(time - time_start, 0.);
 	float time_loc = hats_id < 0 ? 0. : time - hats_time;
-	int fig_sz = 25;
+	int fig_sz = hats_id < 1 ? 33 : 11;
 
 	float time_chane = 5.;
 
@@ -274,8 +274,8 @@ void figures_morph(inout float3 col, float2 uv, float sz, bool shade) {
 
 	float d = lerp(d1, d2, t_coef);
 
-	float disotr_time = time - 60.*3.;
-	float distor_coef = clamp(disotr_time / 30., 0., 1.) * (1. - clamp((time - 330.) / 30., 0., 1.));
+	float disotr_time = time - (60.*3.+45);
+	float distor_coef = clamp(disotr_time / 30., 0., 1.) * (1. - clamp((time - 370.) / 30., 0., 1.));
 	float distor = (sin(uv.x*10. + time*1.4) + sin(uv.y*10. + time*1.7)) / 70.;
 	d += distor_coef * distor;
 
@@ -304,18 +304,18 @@ void mul_figures_morph(inout float3 col, float2 uv) {
 	if (horn_id != 3)
 		first_gorw_coef = horn_id < 3 ? 0. : 1.;
 //	float first_gorw_coef = smoothstep(55., 57., time);
-	float biggest_size = 0.35 + 0.1*first_gorw_coef;
+	float biggest_size = 0.25 + 0.1*first_gorw_coef;
 
 	float mul_fig_time = hats_id < 0 ? -1 : time - hats_time; //time - 60;
 
-	float sin_hide_coef = clamp(1 - power300 * 3., 0., 1.);
+	float sin_hide_coef = clamp(1 - power300 * 6.2, 0., 1.);
 
 	if (mul_fig_time < 0.) {
 		figures_morph(col, uv, biggest_size, false);
 	} else {
 		for (int i = 0; i < 4; ++i) {
 			if (i == 0 || sin(mul_fig_time/3.) > 1.1*sin_hide_coef + (i-1) * 0.1)
-				figures_morph(col, uv, biggest_size - (i * 0.1), i != 0);
+				figures_morph(col, uv, biggest_size - (i * 0.08), i != 0);
 		}
 	}
 
@@ -340,9 +340,9 @@ float4 main(PS_INPUT input) : SV_TARGET
 		col = lerp(0., col, smoothstep(0., fade_time, time));
 	}
 
-	const float fade_out = 350;
+	const float fade_out = 410;
 	if (time > fade_out) {
-		col = lerp(col, 0., smoothstep(fade_out, fade_out+25., time));
+		col = lerp(col, 0., smoothstep(fade_out, fade_out+15., time));
 	}
 
 	// Output to screen

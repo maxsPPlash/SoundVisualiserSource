@@ -38,7 +38,7 @@ bool SimpleSound::Initialize(HINSTANCE hInstance, std::string window_title, std:
 	snd = new WAVSoundFile(file_path);
 	snd_stream = new SoundStreamFile(snd, sound_step);
 
-	player.Play(snd);
+//	player.Play(snd);
 	prev_time = start_time = std::chrono::steady_clock::now();
 
 	scb.Data(&cbuffer);
@@ -53,7 +53,7 @@ bool SimpleSound::Initialize(HINSTANCE hInstance, std::string window_title, std:
 	cbuffer.width = width;
 	cbuffer.height = height;
 
-	return Engine::Initialize(hInstance, window_title, window_class, width, height, recorder, L"test_column", &scb, dyn_textures, stat_textures);
+	return Engine::Initialize(hInstance, window_title, window_class, width, height, recorder, L"test_adv_projection", &scb, dyn_textures, stat_textures);
 }
 
 template <typename T, int size, int window_h_size>

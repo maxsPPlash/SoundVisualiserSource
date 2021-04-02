@@ -57,6 +57,7 @@ private:
 
 	int nohats_cnt;
 	int nohatsin_cnt;
+	float last_300;
 
 	bool inited;
 };

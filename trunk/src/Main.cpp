@@ -23,7 +23,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return -1;
 	}
 
-	LostSouls engine;
+	SimpleSound engine;
 	if (engine.Initialize(hInstance, "Title", "MyWindowClass", 640, 360)) //3840, 2160 //426, 240 // 640, 360 //800, 450 // 1280, 720 // 512, 512
 	{
 		while (engine.ProcessMessages() == true)
