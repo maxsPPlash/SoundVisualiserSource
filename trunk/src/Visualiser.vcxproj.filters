@@ -299,5 +299,8 @@
     <FxCompile Include="lost_souls.hlsl">
       <Filter>Visual\LostSouls</Filter>
     </FxCompile>
+    <FxCompile Include="test_adv_projection.hlsl">
+      <Filter>Visual\SimpleSound\Tests</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
